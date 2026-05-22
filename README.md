@@ -5,430 +5,421 @@
 <img src="https://img.shields.io/badge/MySQL-8.x-4479A1?style=for-the-badge&logo=mysql&logoColor=white"/>
 <img src="https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white"/>
 <img src="https://img.shields.io/badge/Maven-Build-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white"/>
-<img src="https://img.shields.io/badge/JWT-Security-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white"/>
+<img src="https://img.shields.io/badge/JWT-Authentication-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white"/>
 
-# 📊 Scientific Journal Publication Trend Tracking System
+# Scientific Journal Publication Trend Tracking System
 
-**Hệ thống theo dõi và phân tích xu hướng xuất bản bài báo khoa học**
+A full-stack web application for tracking and analyzing scientific publication trends across major academic databases.
 
-*Tổng hợp dữ liệu từ OpenAlex · Crossref · Semantic Scholar*
+*Powered by OpenAlex · Crossref · Semantic Scholar*
 
 ---
 
-[🚀 Demo](#-demo) · [📖 Tài liệu](#-tài-liệu-api) · [⚙️ Cài đặt](#️-cài-đặt-và-chạy) · [🤝 Đóng góp](#-đóng-góp)
+[Overview](#overview) · [Features](#features) · [Architecture](#system-architecture) · [Tech Stack](#tech-stack) · [Installation](#installation) · [API Reference](#api-reference)
 
 </div>
 
 ---
 
-## 📋 Mục lục
+## Table of Contents
 
-- [Tổng quan dự án](#-tổng-quan-dự-án)
-- [Tính năng chính](#-tính-năng-chính)
-- [Kiến trúc hệ thống](#️-kiến-trúc-hệ-thống)
-- [Tech Stack](#-tech-stack)
-- [Cấu trúc dự án](#-cấu-trúc-dự-án)
-- [Yêu cầu hệ thống](#-yêu-cầu-hệ-thống)
-- [Cài đặt và chạy](#️-cài-đặt-và-chạy)
-- [Biến môi trường](#-biến-môi-trường)
-- [Tài liệu API](#-tài-liệu-api)
-- [Database Schema](#️-database-schema)
-- [Git Workflow](#-git-workflow)
-- [Phân công nhóm](#-phân-công-nhóm)
-- [Tiến độ dự án](#-tiến-độ-dự-án)
-- [Rủi ro & Giải pháp](#️-rủi-ro--giải-pháp)
-- [Definition of Done](#-definition-of-done)
+- [Overview](#overview)
+- [Features](#features)
+- [System Architecture](#system-architecture)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Environment Variables](#environment-variables)
+- [API Reference](#api-reference)
+- [Database Schema](#database-schema)
+- [Git Workflow](#git-workflow)
+- [Definition of Done](#definition-of-done)
 
 ---
 
-## 🎯 Tổng quan dự án
+## Overview
 
-> **Đồ án môn học Java** | Thời gian: 20/05/2026 → 10/07/2026 | Nhóm: 6 thành viên
+**Scientific Journal Publication Trend Tracking System** is an enterprise-grade web application that enables researchers, lecturers, and students to monitor, analyze, and visualize research publication trends in real time.
 
-**Scientific Journal Publication Trend Tracking System** là một ứng dụng web full-stack cho phép các nhà nghiên cứu, giảng viên và sinh viên **theo dõi, phân tích và trực quan hóa xu hướng nghiên cứu khoa học** theo thời gian thực.
+The system automatically aggregates publication data from three major academic APIs — OpenAlex, Crossref, and Semantic Scholar — performs trend analysis across keywords and topics, and presents the results through an interactive analytics dashboard.
 
-Hệ thống tự động thu thập dữ liệu bài báo từ **3 nguồn API học thuật lớn** (OpenAlex, Crossref, Semantic Scholar), phân tích xu hướng theo keyword/topic và cung cấp dashboard thống kê trực quan với biểu đồ động.
+### Key Highlights
 
-### 🎖️ Highlights
-
-| Đặc điểm | Chi tiết |
-|-----------|----------|
-| 🌐 **Multi-source Data** | Tích hợp đồng thời 3 API học thuật quốc tế |
-| 📈 **Trend Analytics** | Phân tích tốc độ tăng trưởng, top emerging topics theo năm |
-| 🔒 **Role-based Access** | 4 role phân quyền: RESEARCHER / LECTURER / STUDENT / ADMIN |
-| ⚡ **Auto Sync** | Scheduler tự động đồng bộ dữ liệu hàng ngày/hàng tuần |
-| 🔔 **Notification System** | Thông báo tự động khi có bài báo mới cho nội dung đang follow |
-| 📊 **Rich Visualization** | Line chart, bar chart, pie chart, word cloud |
+| Capability | Description |
+|------------|-------------|
+| Multi-source Aggregation | Simultaneous integration with three international academic APIs |
+| Trend Analytics | Growth rate calculation, emerging topic detection, year-over-year comparison |
+| Role-based Access Control | Four permission levels: RESEARCHER, LECTURER, STUDENT, ADMIN |
+| Automated Synchronization | Scheduled data sync with configurable cron intervals |
+| Notification System | Automated alerts when new publications match followed topics or journals |
+| Rich Visualization | Line charts, bar charts, pie charts, and word cloud components |
 
 ---
 
-## ✨ Tính năng chính
+## Features
 
 <details>
-<summary><b>🔍 Tìm kiếm & Khám phá bài báo</b></summary>
+<summary><b>Search and Discovery</b></summary>
 
-- Tìm kiếm toàn văn theo keyword, tác giả, tên tạp chí
-- Bộ lọc nâng cao: năm xuất bản, lĩnh vực, nguồn API
-- Phân trang kết quả với Pageable
-- Xem chi tiết bài báo: abstract, tác giả, keywords, URL gốc
+- Full-text search by keyword, author name, or journal title
+- Advanced filters: publication year, research field, data source
+- Paginated results with configurable page size
+- Detailed paper view: abstract, authors, keywords, DOI, source URL
 
 </details>
 
 <details>
-<summary><b>📈 Phân tích xu hướng nghiên cứu</b></summary>
+<summary><b>Trend Analysis</b></summary>
 
-- Biểu đồ trend theo thời gian cho từng keyword
-- So sánh đồng thời nhiều keyword/topic
-- Tính toán growth rate so với năm trước
-- Phát hiện emerging topics đang nổi bật
-- Word cloud hiển thị hot keywords
-
-</details>
-
-<details>
-<summary><b>📊 Dashboard thống kê</b></summary>
-
-- Tổng số papers, journals, tác giả, từ khóa trong hệ thống
-- Top trending topics theo tuần/tháng
-- Bài báo mới được thu thập gần đây
-- Phân bố bài báo theo lĩnh vực (pie chart)
-- Top journals theo số lượng bài báo (bar chart)
+- Time-series trend charts per keyword or research topic
+- Multi-keyword comparison on a single chart
+- Growth rate computation relative to the previous year
+- Automated detection of emerging/trending topics
+- Word cloud visualization for hot keywords
 
 </details>
 
 <details>
-<summary><b>🔔 Theo dõi & Thông báo</b></summary>
+<summary><b>Analytics Dashboard</b></summary>
 
-- Follow journal, topic, keyword
-- Nhận thông báo khi có bài báo mới phù hợp
-- Đánh dấu đã đọc / chưa đọc notification
-- Notification bell với badge đếm chưa đọc
-
-</details>
-
-<details>
-<summary><b>🔖 Bookmark cá nhân</b></summary>
-
-- Lưu bài báo yêu thích vào danh sách cá nhân
-- Quản lý và xoá bookmark
-- Truy cập nhanh bài báo đã lưu
+- System-wide statistics: total papers, journals, authors, keywords
+- Top trending topics with recency weighting
+- Recently collected papers feed
+- Field distribution pie chart
+- Top journals by publication count bar chart
 
 </details>
 
 <details>
-<summary><b>⚙️ Quản trị hệ thống (Admin)</b></summary>
+<summary><b>Follow and Notifications</b></summary>
 
-- Quản lý tài khoản người dùng (xem, kích hoạt/vô hiệu hóa, đổi role)
-- Cấu hình nguồn API dữ liệu (OpenAlex, Crossref, Semantic Scholar)
-- Trigger đồng bộ dữ liệu thủ công
-- Xem báo cáo phân tích tổng quan
+- Follow journals, research topics, or individual keywords
+- Automated notifications on new matching publications
+- Read/unread state management for notifications
+- Notification badge with unread count indicator
+
+</details>
+
+<details>
+<summary><b>Personal Bookmarks</b></summary>
+
+- Save papers to a personal reading list
+- Manage and remove bookmarks
+- Quick access to saved papers from any session
+
+</details>
+
+<details>
+<summary><b>Administration</b></summary>
+
+- User account management: view, activate, deactivate, reassign roles
+- External API source configuration (OpenAlex, Crossref, Semantic Scholar)
+- Manual data synchronization trigger
+- System-level analytics and reporting
 
 </details>
 
 ---
 
-## 🏗️ Kiến trúc hệ thống
+## System Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Frontend — React 18 + Vite               │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────┐  │
-│  │  Auth UI │  │ Search   │  │Dashboard │  │  Admin     │  │
-│  │ Login/Reg│  │ Papers   │  │ Charts   │  │  Panel     │  │
-│  └──────────┘  └──────────┘  └──────────┘  └────────────┘  │
-└────────────────────────┬────────────────────────────────────┘
-                         │ REST API (JSON)
-                         │ JWT Bearer Token
-┌────────────────────────▼────────────────────────────────────┐
-│                  Backend — Spring Boot 4.x                  │
-│  ┌────────────┐  ┌────────────┐  ┌──────────────────────┐  │
-│  │  Security  │  │Controllers │  │    Scheduler         │  │
-│  │ JWT Filter │  │    REST    │  │  Daily/Weekly Sync   │  │
-│  └────────────┘  └─────┬──────┘  └──────────┬───────────┘  │
-│                        │                     │              │
-│  ┌─────────────────────▼─────────────────────▼───────────┐  │
-│  │               Service Layer                           │  │
-│  │  AuthService · PaperService · TrendAnalysisService    │  │
-│  │  DataSyncService · NotificationService · ReportService│  │
-│  └──────────────────────────┬────────────────────────────┘  │
-│                             │                               │
-│  ┌──────────────────────────▼────────────────────────────┐  │
-│  │          Repository Layer — Spring Data JPA           │  │
-│  └──────────────────────────┬────────────────────────────┘  │
-└───────────────────────────── │ ──────────────────────────────┘
-                               │
-              ┌────────────────▼────────────────┐
-              │        MySQL 8.x Database        │
-              │     journal_tracker_db           │
-              └─────────────────────────────────┘
-                               ▲
-              ┌────────────────┴────────────────┐
-              │       External API Clients       │
-              │  OpenAlex · Crossref · Semantic  │
-              └──────────────────────────────────┘
++---------------------------------------------------------------+
+|                    Frontend  (React 18 + Vite)                |
+|   +-----------+  +----------+  +----------+  +------------+  |
+|   | Auth UI   |  | Search   |  | Dashboard|  | Admin      |  |
+|   | Login/Reg |  | Papers   |  | Charts   |  | Panel      |  |
+|   +-----------+  +----------+  +----------+  +------------+  |
++-------------------------------|-------------------------------+
+                                | REST API (JSON)
+                                | Authorization: Bearer <JWT>
++-------------------------------|-------------------------------+
+|                Backend  (Spring Boot 4.x)                    |
+|   +---------------+  +--------------+  +------------------+  |
+|   | Spring        |  | REST         |  | Scheduler        |  |
+|   | Security +JWT |  | Controllers  |  | (Daily/Weekly)   |  |
+|   +---------------+  +------+-------+  +--------+---------+  |
+|                             |                    |            |
+|   +-------------------------+--------------------+---------+  |
+|   |                    Service Layer                       |  |
+|   |  AuthService  PaperService  TrendAnalysisService       |  |
+|   |  DataSyncService  NotificationService  ReportService   |  |
+|   +----------------------------+---------------------------+  |
+|                                |                              |
+|   +----------------------------+---------------------------+  |
+|   |         Repository Layer  (Spring Data JPA)            |  |
+|   +----------------------------+---------------------------+  |
++--------------------------------|------------------------------+
+                                 |
+               +-----------------+-----------------+
+               |          MySQL 8.x                |
+               |       journal_tracker_db          |
+               +-----------------+-----------------+
+                                 ^
+               +-----------------+-----------------+
+               |       External API Clients        |
+               |  OpenAlex   Crossref   Semantic   |
+               +-----------------------------------+
 ```
 
-### Luồng đồng bộ dữ liệu (Data Sync Flow)
+### Data Synchronization Flow
 
 ```
-⏰ Scheduler (Daily/Weekly)
-        │
-        ▼
-  Sync Service ──► OpenAlex API ──► Parse & Normalize
-        │      ──► Crossref API         │
-        │      ──► Semantic Scholar     │
-        │                               ▼
-        │                    Deduplication (DOI/Title)
-        │                               │
-        └───────────────────────────────▼
-                               Save to Database
-                                       │
-                                       ▼
-                              Update Trend Statistics
-                                       │
-                                       ▼
-                            Send Notifications to Followers
+Scheduled Trigger (Cron) / Admin Manual Trigger
+        |
+        v
+  DataSyncService
+        |
+        +---------> OpenAlex API  ----+
+        +---------> Crossref API  ----|----> Parse & Normalize Metadata
+        +---------> Semantic Scholar -+
+                                      |
+                               Deduplication
+                            (by DOI / Title hash)
+                                      |
+                              Persist to Database
+                                      |
+                          Recalculate Trend Statistics
+                                      |
+                        Dispatch Notifications to Followers
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
 
-| Thành phần | Công nghệ | Phiên bản |
-|------------|-----------|-----------|
-| **Framework** | Spring Boot | 4.0.6 |
-| **Language** | Java | 17 |
-| **Security** | Spring Security 6 + JWT (jjwt) | 0.12.5 |
-| **ORM** | Spring Data JPA + Hibernate | Latest |
-| **Database** | MySQL | 8.x |
-| **Migration** | Flyway | Latest |
-| **HTTP Client** | Spring WebClient (WebFlux) | Latest |
-| **Scheduler** | Spring `@Scheduled` | Built-in |
-| **Validation** | Jakarta Bean Validation | Latest |
-| **Mapping** | MapStruct | 1.5.5 |
-| **API Docs** | SpringDoc OpenAPI (Swagger UI) | 3.0.2 |
-| **Logging** | SLF4J + Logback | Built-in |
-| **Testing** | JUnit 5 + Mockito | Latest |
-| **Build** | Maven | Latest |
-| **Utilities** | Lombok | Latest |
+| Layer | Technology | Version |
+|-------|------------|---------|
+| Framework | Spring Boot | 4.0.6 |
+| Language | Java | 17 |
+| Security | Spring Security 6 + jjwt | 0.12.5 |
+| Persistence | Spring Data JPA + Hibernate | Latest |
+| Database | MySQL | 8.x |
+| Schema Migration | Flyway | Latest |
+| External HTTP | Spring WebClient (WebFlux) | Latest |
+| Job Scheduling | Spring `@Scheduled` | Built-in |
+| Validation | Jakarta Bean Validation | Latest |
+| Object Mapping | MapStruct | 1.5.5 |
+| API Documentation | SpringDoc OpenAPI (Swagger UI) | 3.0.2 |
+| Logging | SLF4J + Logback | Built-in |
+| Testing | JUnit 5 + Mockito | Latest |
+| Build Tool | Apache Maven | Latest |
+| Utilities | Lombok | Latest |
 
 ### Frontend
 
-| Thành phần | Công nghệ | Phiên bản |
-|------------|-----------|-----------|
-| **Framework** | React | 18 |
-| **Build Tool** | Vite | Latest |
-| **UI Library** | Ant Design | Latest |
-| **Charts** | Recharts | Latest |
-| **HTTP Client** | Axios | Latest |
-| **Routing** | React Router DOM | Latest |
-| **State Management** | Zustand | Latest |
-| **Date Handling** | Day.js | Latest |
+| Layer | Technology | Version |
+|-------|------------|---------|
+| Framework | React | 18 |
+| Build Tool | Vite | Latest |
+| UI Library | Ant Design | Latest |
+| Charting | Recharts | Latest |
+| HTTP Client | Axios | Latest |
+| Routing | React Router DOM | Latest |
+| State Management | Zustand | Latest |
+| Date Handling | Day.js | Latest |
 
-### External APIs
+### External Data Sources
 
-| API | Mục đích | Documentation |
-|-----|----------|---------------|
-| [OpenAlex](https://openalex.org/) | Thu thập metadata bài báo | [docs.openalex.org](https://docs.openalex.org) |
-| [Crossref](https://www.crossref.org/) | Dữ liệu DOI & citation | [api.crossref.org](https://api.crossref.org) |
-| [Semantic Scholar](https://www.semanticscholar.org/) | Phân tích trích dẫn | [api.semanticscholar.org](https://api.semanticscholar.org) |
+| API | Purpose | Documentation |
+|-----|---------|---------------|
+| OpenAlex | Paper metadata aggregation | [docs.openalex.org](https://docs.openalex.org) |
+| Crossref | DOI resolution and citation data | [api.crossref.org](https://api.crossref.org) |
+| Semantic Scholar | Citation graph and author metrics | [api.semanticscholar.org](https://api.semanticscholar.org) |
 
 ---
 
-## 📁 Cấu trúc dự án
+## Project Structure
 
 ```
 journal-trend-tracker/
-│
-├── 📂 backend/
-│   └── com.journaltracker/
-│       ├── src/main/java/com/journaltracker/
-│       │   ├── JournalTrackerApplication.java      # Entry point
-│       │   │
-│       │   ├── 📂 config/                           # Cấu hình hệ thống
-│       │   │   ├── SecurityConfig.java              # Spring Security + CORS
-│       │   │   ├── WebConfig.java                   # CORS mapping
-│       │   │   ├── SchedulerConfig.java             # Scheduler cấu hình
-│       │   │   └── SwaggerConfig.java               # OpenAPI/Swagger
-│       │   │
-│       │   ├── 📂 controller/                       # REST API Controllers
-│       │   │   ├── AuthController.java              # POST /api/auth/**
-│       │   │   ├── PaperController.java             # GET /api/papers/**
-│       │   │   ├── JournalController.java           # GET /api/journals/**
-│       │   │   ├── TrendController.java             # GET /api/trends/**
-│       │   │   ├── DashboardController.java         # GET /api/dashboard/**
-│       │   │   ├── BookmarkController.java          # CRUD /api/bookmarks
-│       │   │   ├── NotificationController.java      # GET /api/notifications
-│       │   │   ├── FollowController.java            # CRUD /api/follows
-│       │   │   ├── ReportController.java            # GET /api/reports/**
-│       │   │   └── AdminController.java             # /api/admin/** (ADMIN only)
-│       │   │
-│       │   ├── 📂 dto/
-│       │   │   ├── request/                         # DTOs cho request body
-│       │   │   └── response/                        # DTOs cho response + ApiResponse<T>
-│       │   │
-│       │   ├── 📂 entity/                           # JPA Entities
-│       │   │   ├── User.java
-│       │   │   ├── ResearchPaper.java
-│       │   │   ├── Journal.java
-│       │   │   ├── Author.java
-│       │   │   ├── Keyword.java
-│       │   │   ├── ResearchTopic.java
-│       │   │   ├── PublicationTrend.java
-│       │   │   ├── Bookmark.java
-│       │   │   ├── Notification.java
-│       │   │   ├── Follow.java
-│       │   │   └── ApiDataSource.java
-│       │   │
-│       │   ├── 📂 repository/                       # Spring Data JPA Repositories
-│       │   ├── 📂 mapper/                           # MapStruct mappers
-│       │   │
-│       │   ├── 📂 service/                          # Business Logic Layer
-│       │   │   ├── impl/                            # Service implementations
-│       │   │   ├── AuthService.java
-│       │   │   ├── PaperService.java
-│       │   │   ├── TrendAnalysisService.java        # Core trend logic
-│       │   │   ├── DataSyncService.java             # Core sync logic
-│       │   │   ├── NotificationService.java
-│       │   │   └── ReportService.java
-│       │   │
-│       │   ├── 📂 security/                         # JWT & Security
-│       │   │   ├── JwtTokenProvider.java
-│       │   │   ├── JwtAuthenticationFilter.java
-│       │   │   └── CustomUserDetailsService.java
-│       │   │
-│       │   ├── 📂 scheduler/
-│       │   │   └── DataSyncScheduler.java           # @Scheduled sync jobs
-│       │   │
-│       │   ├── 📂 client/                           # External API Clients
-│       │   │   ├── OpenAlexClient.java
-│       │   │   ├── CrossrefClient.java
-│       │   │   └── SemanticScholarClient.java
-│       │   │
-│       │   ├── 📂 exception/                        # Exception handling
-│       │   │   ├── GlobalExceptionHandler.java
-│       │   │   └── [Custom Exceptions...]
-│       │   │
-│       │   └── 📂 util/                             # Utilities
-│       │
-│       └── src/main/resources/
-│           ├── application.yml                      # Cấu hình chính
-│           ├── application-dev.yml                  # Cấu hình môi trường dev
-│           └── db/migration/
-│               ├── V1__init_schema.sql              # Tạo 14 bảng
-│               └── V2__insert_sample_data.sql       # Dữ liệu mẫu
-│
-├── 📂 frontend/
-│   └── src/
-│       ├── 📂 api/                                  # Axios instances & API calls
-│       │   ├── axiosConfig.js                       # Base config + JWT interceptor
-│       │   ├── authApi.js
-│       │   ├── paperApi.js
-│       │   ├── trendApi.js
-│       │   ├── dashboardApi.js
-│       │   ├── bookmarkApi.js
-│       │   ├── followApi.js
-│       │   └── reportApi.js
-│       │
-│       ├── 📂 components/                           # Shared UI Components
-│       │   ├── Layout/                              # Sidebar, Header, Footer
-│       │   ├── Charts/                              # LineChart, BarChart, PieChart, WordCloud
-│       │   ├── Dashboard/                           # StatCard, TrendingTopics
-│       │   ├── PaperCard.jsx
-│       │   ├── SearchBar.jsx
-│       │   └── TopicCard.jsx
-│       │
-│       ├── 📂 pages/                                # Page Components
-│       │   ├── Login.jsx
-│       │   ├── Register.jsx
-│       │   ├── Dashboard.jsx
-│       │   ├── SearchPapers.jsx
-│       │   ├── PaperDetail.jsx
-│       │   ├── TrendAnalysis.jsx
-│       │   ├── TopicExplorer.jsx
-│       │   ├── Bookmarks.jsx
-│       │   ├── Notifications.jsx
-│       │   ├── Following.jsx
-│       │   ├── Reports.jsx
-│       │   └── AdminPanel.jsx
-│       │
-│       ├── 📂 context/
-│       │   └── AuthContext.jsx                      # Global auth state
-│       │
-│       ├── 📂 hooks/
-│       │   └── useAuth.js                           # Custom auth hook
-│       │
-│       ├── 📂 utils/                                # Helper functions
-│       ├── App.jsx                                  # Root with Router
-│       └── main.jsx                                 # Entry point
-│
-└── 📂 docs/
-    ├── implementation_plan.md                       # Kế hoạch triển khai chi tiết
-    ├── database_schema.md                           # Schema 14 bảng
-    ├── jira_stories_epic1_to_epic3.md               # Jira stories EPIC 1-3
-    ├── jira_stories_epic4_to_epic6.md               # Jira stories EPIC 4-6
-    └── jira_stories_epic7_to_epic8.md               # Jira stories EPIC 7-8
+|
++-- backend/
+|   +-- com.journaltracker/
+|       +-- src/main/java/com/journaltracker/
+|       |   +-- JournalTrackerApplication.java
+|       |   |
+|       |   +-- config/
+|       |   |   +-- SecurityConfig.java         # Spring Security, CORS, filter chain
+|       |   |   +-- WebConfig.java              # CORS mappings
+|       |   |   +-- SchedulerConfig.java        # Scheduler configuration
+|       |   |   +-- SwaggerConfig.java          # OpenAPI / Swagger UI
+|       |   |
+|       |   +-- controller/
+|       |   |   +-- AuthController.java         # POST /api/auth/**
+|       |   |   +-- PaperController.java        # GET  /api/papers/**
+|       |   |   +-- JournalController.java      # GET  /api/journals/**
+|       |   |   +-- TrendController.java        # GET  /api/trends/**
+|       |   |   +-- DashboardController.java    # GET  /api/dashboard/**
+|       |   |   +-- BookmarkController.java     # CRUD /api/bookmarks
+|       |   |   +-- NotificationController.java # GET  /api/notifications
+|       |   |   +-- FollowController.java       # CRUD /api/follows
+|       |   |   +-- ReportController.java       # GET  /api/reports/**
+|       |   |   +-- AdminController.java        # /api/admin/** (ADMIN role only)
+|       |   |
+|       |   +-- dto/
+|       |   |   +-- request/                    # Inbound DTO classes
+|       |   |   +-- response/                   # Outbound DTO classes + ApiResponse<T>
+|       |   |
+|       |   +-- entity/
+|       |   |   +-- User.java
+|       |   |   +-- ResearchPaper.java
+|       |   |   +-- Journal.java
+|       |   |   +-- Author.java
+|       |   |   +-- Keyword.java
+|       |   |   +-- ResearchTopic.java
+|       |   |   +-- PublicationTrend.java
+|       |   |   +-- Bookmark.java
+|       |   |   +-- Notification.java
+|       |   |   +-- Follow.java
+|       |   |   +-- ApiDataSource.java
+|       |   |
+|       |   +-- repository/                     # Spring Data JPA repositories
+|       |   +-- mapper/                         # MapStruct mapper interfaces
+|       |   |
+|       |   +-- service/
+|       |   |   +-- impl/                       # Service implementations
+|       |   |   +-- AuthService.java
+|       |   |   +-- PaperService.java
+|       |   |   +-- TrendAnalysisService.java   # Core trend computation
+|       |   |   +-- DataSyncService.java        # Core sync orchestration
+|       |   |   +-- NotificationService.java
+|       |   |   +-- ReportService.java
+|       |   |
+|       |   +-- security/
+|       |   |   +-- JwtTokenProvider.java
+|       |   |   +-- JwtAuthenticationFilter.java
+|       |   |   +-- CustomUserDetailsService.java
+|       |   |
+|       |   +-- scheduler/
+|       |   |   +-- DataSyncScheduler.java      # Cron-based sync jobs
+|       |   |
+|       |   +-- client/
+|       |   |   +-- OpenAlexClient.java
+|       |   |   +-- CrossrefClient.java
+|       |   |   +-- SemanticScholarClient.java
+|       |   |
+|       |   +-- exception/
+|       |   |   +-- GlobalExceptionHandler.java
+|       |   |   +-- [Custom exception classes]
+|       |   |
+|       |   +-- util/
+|       |
+|       +-- src/main/resources/
+|           +-- application.yml
+|           +-- application-dev.yml
+|           +-- db/migration/
+|               +-- V1__init_schema.sql         # Creates all 14 tables
+|               +-- V2__insert_sample_data.sql  # Seeds initial data
+|
++-- frontend/
+|   +-- src/
+|       +-- api/
+|       |   +-- axiosConfig.js                  # Base instance + JWT interceptor
+|       |   +-- authApi.js
+|       |   +-- paperApi.js
+|       |   +-- trendApi.js
+|       |   +-- dashboardApi.js
+|       |   +-- bookmarkApi.js
+|       |   +-- followApi.js
+|       |   +-- reportApi.js
+|       |
+|       +-- components/
+|       |   +-- Layout/                         # Sidebar, Header, Footer
+|       |   +-- Charts/                         # LineChart, BarChart, PieChart, WordCloud
+|       |   +-- Dashboard/                      # StatCard, TrendingTopics
+|       |   +-- PaperCard.jsx
+|       |   +-- SearchBar.jsx
+|       |   +-- TopicCard.jsx
+|       |
+|       +-- pages/
+|       |   +-- Login.jsx
+|       |   +-- Register.jsx
+|       |   +-- Dashboard.jsx
+|       |   +-- SearchPapers.jsx
+|       |   +-- PaperDetail.jsx
+|       |   +-- TrendAnalysis.jsx
+|       |   +-- TopicExplorer.jsx
+|       |   +-- Bookmarks.jsx
+|       |   +-- Notifications.jsx
+|       |   +-- Following.jsx
+|       |   +-- Reports.jsx
+|       |   +-- AdminPanel.jsx
+|       |
+|       +-- context/
+|       |   +-- AuthContext.jsx                 # Global authentication state
+|       |
+|       +-- hooks/
+|       |   +-- useAuth.js
+|       |
+|       +-- utils/
+|       +-- App.jsx
+|       +-- main.jsx
+|
++-- docs/
+    +-- implementation_plan.md
+    +-- database_schema.md
+    +-- jira_stories_epic1_to_epic3.md
+    +-- jira_stories_epic4_to_epic6.md
+    +-- jira_stories_epic7_to_epic8.md
 ```
 
 ---
 
-## 💻 Yêu cầu hệ thống
+## Prerequisites
 
-| Thành phần | Yêu cầu tối thiểu |
-|------------|-------------------|
-| **Java** | JDK 17+ |
-| **Maven** | 3.6+ |
-| **Node.js** | 18+ |
-| **npm** | 8+ |
-| **MySQL** | 8.0+ |
-| **RAM** | 4GB+ (khuyến nghị 8GB) |
-| **OS** | Windows 10+ / macOS 11+ / Ubuntu 20.04+ |
+| Requirement | Minimum Version |
+|-------------|----------------|
+| Java (JDK) | 17 |
+| Apache Maven | 3.6 |
+| Node.js | 18 |
+| npm | 8 |
+| MySQL Server | 8.0 |
 
 ---
 
-## ⚙️ Cài đặt và Chạy
+## Installation
 
-### 1. Clone Repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/<your-org>/journal-trend-tracker.git
 cd journal-trend-tracker
 ```
 
-### 2. Cài đặt Database
+### 2. Provision the Database
 
 ```sql
--- Tạo database MySQL
-CREATE DATABASE journal_tracker_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'jtracker'@'localhost' IDENTIFIED BY 'yourpassword';
+CREATE DATABASE journal_tracker_db
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+CREATE USER 'jtracker'@'localhost' IDENTIFIED BY '<your_password>';
 GRANT ALL PRIVILEGES ON journal_tracker_db.* TO 'jtracker'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-> **Lưu ý:** Không cần import SQL thủ công. Flyway sẽ tự động chạy migration khi khởi động backend.
+> Flyway will automatically apply all migrations on first startup. No manual SQL import is required.
 
-### 3. Cấu hình Backend
+### 3. Configure the Backend
 
-Tạo file `backend/com.journaltracker/src/main/resources/application-dev.yml`:
+Create `backend/com.journaltracker/src/main/resources/application-dev.yml`:
 
 ```yaml
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/journal_tracker_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: jtracker
-    password: yourpassword
+    password: <your_password>
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: validate          # Flyway quản lý schema, Hibernate chỉ validate
+      ddl-auto: validate
     show-sql: false
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
 
   flyway:
     enabled: true
@@ -436,8 +427,8 @@ spring:
     baseline-on-migrate: true
 
 jwt:
-  secret: your-super-secret-key-must-be-at-least-256-bits-long
-  expiration: 86400000            # 24 giờ (milliseconds)
+  secret: <256-bit-secret-key>
+  expiration: 86400000   # 24 hours in milliseconds
 
 server:
   port: 8080
@@ -449,103 +440,92 @@ springdoc:
     path: /swagger-ui.html
 ```
 
-### 4. Chạy Backend
+### 4. Start the Backend
 
 ```bash
 cd backend/com.journaltracker
-
-# Build project
 mvn clean install -DskipTests
-
-# Chạy ứng dụng (dev profile)
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-✅ Backend khởi động thành công tại: `http://localhost:8080`  
-📖 Swagger UI: `http://localhost:8080/swagger-ui.html`
+The backend will be available at `http://localhost:8080`.  
+Interactive API documentation: `http://localhost:8080/swagger-ui.html`
 
-### 5. Cài đặt và Chạy Frontend
+### 5. Start the Frontend
 
 ```bash
 cd frontend
-
-# Cài đặt dependencies
 npm install
-
-# Chạy dev server
 npm run dev
 ```
 
-✅ Frontend khởi động thành công tại: `http://localhost:5173`
+The frontend will be available at `http://localhost:5173`.
 
-### 6. Tài khoản mặc định (từ sample data)
+### 6. Default Credentials (Seeded Data)
 
 | Role | Username | Password |
 |------|----------|----------|
-| **ADMIN** | `admin` | `admin123` |
-| **RESEARCHER** | `researcher01` | `test123` |
-| **STUDENT** | `student01` | `test123` |
+| ADMIN | `admin` | `admin123` |
+| RESEARCHER | `researcher01` | `test123` |
+| STUDENT | `student01` | `test123` |
 
-> ⚠️ **Bảo mật:** Đổi mật khẩu admin ngay sau lần đầu đăng nhập trong môi trường production.
+> **Security notice:** Change all default passwords before deploying to any non-local environment.
 
 ---
 
-## 🔑 Biến môi trường
+## Environment Variables
 
-### Backend (application.yml)
+### Backend
 
-| Key | Mô tả | Ví dụ |
-|-----|-------|-------|
-| `spring.datasource.url` | JDBC URL kết nối MySQL | `jdbc:mysql://localhost:3306/journal_tracker_db` |
-| `spring.datasource.username` | Username MySQL | `jtracker` |
-| `spring.datasource.password` | Password MySQL | `yourpassword` |
-| `jwt.secret` | Secret key cho JWT signing (≥256 bits) | `your-secret-key-here` |
-| `jwt.expiration` | Thời gian hết hạn JWT (ms) | `86400000` (24h) |
-| `server.port` | Port backend | `8080` |
+| Key | Description | Example |
+|-----|-------------|---------|
+| `spring.datasource.url` | JDBC connection string | `jdbc:mysql://localhost:3306/journal_tracker_db` |
+| `spring.datasource.username` | Database username | `jtracker` |
+| `spring.datasource.password` | Database password | `yourpassword` |
+| `jwt.secret` | HMAC signing key (minimum 256 bits) | `your-secret-key` |
+| `jwt.expiration` | Token validity in milliseconds | `86400000` |
+| `server.port` | HTTP server port | `8080` |
 
-### Frontend (`.env` file)
+### Frontend
 
 ```env
+# frontend/.env
 VITE_API_BASE_URL=http://localhost:8080/api
 VITE_APP_NAME=Journal Trend Tracker
 ```
 
 ---
 
-## 📖 Tài liệu API
+## API Reference
 
-Sau khi chạy backend, truy cập Swagger UI để xem và test toàn bộ API:
+Full interactive documentation is available via Swagger UI at `http://localhost:8080/swagger-ui.html`.
 
-```
-http://localhost:8080/swagger-ui.html
-```
+### Endpoint Groups
 
-### Tóm tắt các nhóm API
+| Group | Base Path | Description | Authentication |
+|-------|-----------|-------------|----------------|
+| Auth | `/api/auth` | Register, login, refresh token | Public |
+| Users | `/api/users` | Profile management, password change | Required |
+| Papers | `/api/papers` | Paper search and detail | Public (search) |
+| Journals | `/api/journals` | Journal listing and detail | Public |
+| Trends | `/api/trends` | Keyword and topic trend data | Required |
+| Dashboard | `/api/dashboard` | Aggregated statistics and trending | Required |
+| Bookmarks | `/api/bookmarks` | Personal bookmark management | Required |
+| Follows | `/api/follows` | Follow journals, topics, keywords | Required |
+| Notifications | `/api/notifications` | Notification listing and read state | Required |
+| Reports | `/api/reports` | Analytical reports and exports | Required |
+| Admin | `/api/admin` | User management, datasource config, sync trigger | ADMIN role |
 
-| Nhóm | Base URL | Mô tả | Auth |
-|------|----------|-------|------|
-| **Auth** | `/api/auth` | Đăng ký, đăng nhập, refresh token | Public |
-| **Users** | `/api/users` | Profile, đổi mật khẩu | 🔒 Required |
-| **Papers** | `/api/papers` | Tìm kiếm, xem chi tiết bài báo | Public (search) |
-| **Journals** | `/api/journals` | Danh sách, chi tiết tạp chí | Public |
-| **Trends** | `/api/trends` | Dữ liệu xu hướng theo keyword/topic | 🔒 Required |
-| **Dashboard** | `/api/dashboard` | Thống kê tổng quan, trending | 🔒 Required |
-| **Bookmarks** | `/api/bookmarks` | CRUD bookmark cá nhân | 🔒 Required |
-| **Follows** | `/api/follows` | Follow/Unfollow journal, topic, keyword | 🔒 Required |
-| **Notifications** | `/api/notifications` | Danh sách, đánh dấu đọc thông báo | 🔒 Required |
-| **Reports** | `/api/reports` | Báo cáo phân tích trend | 🔒 Required |
-| **Admin** | `/api/admin` | Quản lý users, datasource, trigger sync | 🔒 ADMIN only |
+### Unified Response Envelope
 
-### Cấu trúc Response chuẩn
-
-Mọi API đều trả về định dạng thống nhất `ApiResponse<T>`:
+All endpoints return a consistent `ApiResponse<T>` wrapper:
 
 ```json
 // Success
 {
   "success": true,
   "message": "Operation completed successfully",
-  "data": { ... },
+  "data": {},
   "timestamp": "2026-05-22T12:00:00"
 }
 
@@ -558,210 +538,161 @@ Mọi API đều trả về định dạng thống nhất `ApiResponse<T>`:
 }
 ```
 
-### Xác thực với JWT
+### Authentication
 
 ```bash
-# 1. Đăng nhập để lấy token
+# Step 1 — Obtain a token
 POST /api/auth/login
+Content-Type: application/json
+
 {
   "username": "researcher01",
   "password": "test123"
 }
 
-# 2. Sử dụng token cho các API protected
+# Step 2 — Pass the token on subsequent requests
 GET /api/bookmarks
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
----
+### HTTP Status Code Conventions
 
-## 🗄️ Database Schema
-
-Hệ thống sử dụng **14 bảng** trong database `journal_tracker_db`, quản lý bằng Flyway migration.
-
-```
-journals ──────────────────────────── (1:N) ──── research_papers
-                                                        │
-                                          ┌─────────────┼─────────────┐
-                                          │             │             │
-                                    paper_authors  paper_keywords  bookmarks
-                                          │             │             │
-                                       authors      keywords       users
-                                                        │          │   │
-                                               publication_trends  │   │
-                                                                    │   │
-                                               research_topics ─── │ follows
-                                                        │       notifications
-                                               topic_keywords
-
-api_data_sources (standalone)
-```
-
-| # | Bảng | Mô tả |
-|---|------|-------|
-| 1 | `users` | Tài khoản người dùng + role |
-| 2 | `research_papers` | Bài báo khoa học (DOI unique) |
-| 3 | `journals` | Tạp chí khoa học |
-| 4 | `authors` | Tác giả bài báo |
-| 5 | `keywords` | Từ khóa nghiên cứu |
-| 6 | `research_topics` | Chủ đề nghiên cứu tổng hợp |
-| 7 | `publication_trends` | Dữ liệu xu hướng theo năm/keyword |
-| 8 | `bookmarks` | Bài báo đã lưu của user |
-| 9 | `notifications` | Thông báo hệ thống |
-| 10 | `follows` | Theo dõi journal/topic/keyword |
-| 11 | `api_data_sources` | Cấu hình nguồn API bên ngoài |
-| 12 | `paper_authors` | 🔗 Junction table |
-| 13 | `paper_keywords` | 🔗 Junction table |
-| 14 | `topic_keywords` | 🔗 Junction table |
-
-> 📄 Xem chi tiết schema tại: [`docs/database_schema.md`](docs/database_schema.md)
+| Status | Meaning |
+|--------|---------|
+| `200 OK` | Request succeeded |
+| `201 Created` | Resource created successfully |
+| `400 Bad Request` | Validation failure or malformed request |
+| `401 Unauthorized` | Missing or invalid JWT token |
+| `403 Forbidden` | Authenticated but insufficient role |
+| `404 Not Found` | Requested resource does not exist |
+| `409 Conflict` | Duplicate resource (e.g., username already taken) |
+| `500 Internal Server Error` | Unexpected server-side error |
 
 ---
 
-## 🔀 Git Workflow
+## Database Schema
 
-### Branching Strategy
+The system uses **14 tables** managed exclusively by Flyway migrations.
 
 ```
-main                  ← Production-ready, chỉ merge từ develop khi stable
-  └── develop         ← Integration branch, merge tất cả feature branches
-        ├── feature/auth-api
-        ├── feature/paper-search
-        ├── feature/trend-analysis
-        ├── feature/frontend-core
-        ├── feature/dashboard-charts
-        └── bugfix/login-500-error
+journals
+  |-- (1:N) --> research_papers
+                    |-- (N:N) --> authors         [via paper_authors]
+                    |-- (N:N) --> keywords        [via paper_keywords]
+                    |-- (1:N) --> bookmarks
+                                      |-- (N:1) --> users
+                                                       |-- (1:N) --> notifications
+                                                       |-- (1:N) --> follows
+
+keywords
+  |-- (1:N) --> publication_trends
+  |-- (N:N) --> research_topics     [via topic_keywords]
+
+api_data_sources   (standalone configuration table)
 ```
 
-### Quy tắc làm việc
+| Table | Description |
+|-------|-------------|
+| `users` | User accounts with role assignment |
+| `research_papers` | Scientific papers (DOI-unique) |
+| `journals` | Academic journals |
+| `authors` | Paper authors with external API IDs |
+| `keywords` | Research keywords with usage counters |
+| `research_topics` | Aggregated research topic groups |
+| `publication_trends` | Year-over-year trend data per keyword |
+| `bookmarks` | User-saved papers |
+| `notifications` | System notifications per user |
+| `follows` | User subscriptions to journals, topics, or keywords |
+| `api_data_sources` | External API source configuration |
+| `paper_authors` | Junction: papers ↔ authors |
+| `paper_keywords` | Junction: papers ↔ keywords |
+| `topic_keywords` | Junction: topics ↔ keywords |
 
-| Quy tắc | Chi tiết |
-|---------|----------|
-| **Branch naming** | `feature/{module-name}` hoặc `bugfix/{description}` |
-| **Commit message** | `[JP-XX] Mô tả ngắn gọn bằng tiếng Anh` |
-| **Pull Request** | Mọi merge vào `develop` phải qua PR |
-| **Review** | Leader review và approve trước khi merge |
-| **Code freeze** | Ngày 08/07 — chỉ fix critical bugs sau ngày này |
+For the full schema definition including column types and constraints, see [`docs/database_schema.md`](docs/database_schema.md).
 
-### Ví dụ commit messages
+---
+
+## Git Workflow
+
+### Branch Naming Convention
+
+| Branch Type | Pattern | Example |
+|-------------|---------|---------|
+| Feature | `feature/<module>` | `feature/auth-api` |
+| Bug Fix | `bugfix/<description>` | `bugfix/login-500-error` |
+| Hot Fix | `hotfix/<description>` | `hotfix/jwt-expiry-null` |
+
+### Branch Strategy
+
+```
+main          <-- Production-ready. Merged from develop when stable.
+  |
+  +-- develop <-- Integration branch. All feature branches merge here via PR.
+        |
+        +-- feature/auth-api
+        +-- feature/paper-search
+        +-- feature/trend-analysis
+        +-- feature/frontend-core
+        +-- feature/dashboard-charts
+```
+
+### Workflow
 
 ```bash
-git commit -m "[JP-10] Implement login API with JWT authentication"
-git commit -m "[JP-25] Add OpenAlex client with pagination support"
-git commit -m "[JP-36] Create trend line chart component with multi-keyword support"
-```
-
----
-
-## 👥 Phân công nhóm
-
-| Thành viên | Role | Phụ trách chính | Stories |
-|------------|------|-----------------|---------|
-| **Leader (TV1)** | PM + Architect + Core Dev | Config, Security, Scheduler, Core Services, Integration, Code Review | ~12 |
-| **TV2** | Backend Developer | Auth, User Management, Notification, Follow | ~8 |
-| **TV3** | Backend Developer | Paper, Journal, Author, Keyword, Bookmark, Search | ~8 |
-| **TV4** | Backend Developer | Trend API, External API Clients, Dashboard API, Report, Topic, Admin Config | ~10 |
-| **TV5** | Frontend Developer | Auth UI, Layout, Search Page, Paper Detail, Bookmarks, Notifications, Admin Panel | ~10 |
-| **TV6** | Frontend Developer | Dashboard, Charts, Trend Analysis Page, Topic Explorer, Reports, Following | ~9 |
-
-### EPIC Structure
-
-| Epic | Tên | Assignee chính |
-|------|-----|----------------|
-| **EPIC-1** | Project Setup & Foundation | Leader |
-| **EPIC-2** | Authentication & User Management | TV2 |
-| **EPIC-3** | Paper, Journal & Search | TV3 |
-| **EPIC-4** | Trend Analysis & Data Sync | Leader + TV4 |
-| **EPIC-5** | Dashboard & Visualization | TV6 |
-| **EPIC-6** | Notification, Bookmark & Follow | TV2 + TV3 + TV5 |
-| **EPIC-7** | Admin & Report | TV4 + TV5 + TV6 |
-| **EPIC-8** | Integration, Testing & Polish | All |
-
----
-
-## 📅 Tiến độ dự án
-
-| Sprint | Thời gian | Mục tiêu chính | Checkpoint |
-|--------|-----------|----------------|-----------|
-| **Sprint 1** | 20/05 → 26/05 | Project setup, DB migration, JWT, React init | Backend + Frontend khởi động được |
-| **Sprint 2** | 27/05 → 02/06 | Auth API E2E, Entity layer, OpenAlex client | Register → Login → JWT → API protected hoạt động |
-| **Sprint 3** | 03/06 → 09/06 | Paper/Journal/Author API, Trend core, Search UI | Có thể search papers, xem dashboard cơ bản |
-| **Sprint 4** | 10/06 → 16/06 | Bookmark/Follow/Notification, Trend charts | Trend analysis E2E, Bookmark & Follow API ready |
-| **Sprint 5** | 17/06 → 23/06 | Hoàn thiện tất cả features | Tất cả features có UI + API |
-| **Sprint 6** | 24/06 → 30/06 | Integration, bug fixing, unit tests | Hệ thống chạy ổn định end-to-end |
-| **Sprint 7** | 01/07 → 10/07 | Polish, documentation, demo prep | **DEADLINE: Nộp bài 10/07** |
-
----
-
-## ⚠️ Rủi ro & Giải pháp
-
-| Rủi ro | Xác suất | Giải pháp |
-|--------|----------|-----------|
-| **API bên thứ ba bị rate limit** | 🔴 Cao | Cache kết quả, retry với exponential backoff, sử dụng nhiều API source |
-| **Thành viên trễ deadline sprint** | 🟡 Trung bình | Daily standup qua Zalo/Discord, Leader theo dõi Jira board hằng ngày |
-| **Conflict khi merge code** | 🟡 Trung bình | PR nhỏ, merge thường xuyên, không để branch chênh xa `develop` |
-| **Database schema thay đổi** | 🟢 Thấp | Dùng Flyway migration — dễ rollback/evolve schema mà không mất data |
-| **Frontend-Backend API mismatch** | 🟡 Trung bình | Định nghĩa API contract trên Swagger trước khi code |
-
----
-
-## ✅ Definition of Done
-
-Một task được coi là **DONE** khi đáp ứng đầy đủ:
-
-- [ ] Code hoàn thành, build thành công (`mvn clean install` không lỗi)
-- [ ] Có ít nhất 1 unit test cho service/logic phức tạp
-- [ ] API test qua Postman/Swagger thành công
-- [ ] Code đã push lên feature branch
-- [ ] Pull Request đã được tạo với mô tả rõ ràng
-- [ ] PR đã được Leader review và approve
-- [ ] PR đã được merge vào `develop`
-- [ ] Jira task đã chuyển sang status **Done**
-
----
-
-## 🤝 Đóng góp
-
-### Quy trình đóng góp code
-
-```bash
-# 1. Checkout develop mới nhất
+# 1. Always branch from the latest develop
 git checkout develop
 git pull origin develop
+git checkout -b feature/<module-name>
 
-# 2. Tạo feature branch
-git checkout -b feature/your-feature-name
+# 2. Commit with a structured message
+git commit -m "[JP-XX] Short imperative description of the change"
 
-# 3. Code, commit thường xuyên
-git add .
-git commit -m "[JP-XX] Mô tả ngắn gọn"
-
-# 4. Push và tạo Pull Request
-git push origin feature/your-feature-name
-# → Tạo PR trên GitHub → Request review từ Leader
+# 3. Push and open a Pull Request targeting develop
+git push origin feature/<module-name>
+# Open a PR on GitHub and request a review
 ```
 
-### Daily Standup (5-10 phút qua chat group)
+### Commit Message Format
 
-Mỗi ngày trả lời 3 câu:
-1. 🟢 Hôm qua làm được gì?
-2. 🔵 Hôm nay làm gì?
-3. 🔴 Có gì bị blocked không?
+```
+[JP-XX] <imperative verb> <short description>
+
+Examples:
+  [JP-10] Implement JWT login endpoint with BCrypt password verification
+  [JP-25] Add OpenAlex client with cursor-based pagination
+  [JP-36] Create reusable Recharts line chart for multi-keyword comparison
+```
+
+### Merge Rules
+
+- Every merge into `develop` or `main` requires a reviewed and approved Pull Request.
+- Merging a PR without at least one approval is not permitted.
+- Squash merging is preferred to keep the `develop` history clean.
 
 ---
 
-## 📞 Liên hệ & Giao tiếp
+## Definition of Done
 
-| Kênh | Mục đích |
-|------|----------|
-| **Zalo / Discord Group** | Trao đổi hằng ngày, thông báo nhanh |
-| **Jira Board** | Quản lý task: To Do → In Progress → Code Review → Done |
-| **GitHub Pull Requests** | Code review trước khi merge |
-| **Google Meet** | Họp khi có vấn đề phức tạp cần giải quyết nhóm |
+A task is considered **Done** only when all of the following criteria are satisfied:
+
+- [ ] Code compiles and builds successfully with no errors (`mvn clean install`)
+- [ ] At least one unit test covers the core business logic of the feature
+- [ ] API endpoints are verified via Postman or Swagger UI
+- [ ] Code is pushed to the designated feature branch
+- [ ] A Pull Request is created with a clear title and description
+- [ ] The Pull Request has been reviewed and approved
+- [ ] The Pull Request has been merged into `develop`
+- [ ] The corresponding task has been moved to the **Done** column on the board
 
 ---
 
-## 📚 Tài liệu tham khảo
+## License
+
+This project is developed for academic purposes. All rights reserved by the respective authors.
+
+---
+
+## References
 
 - [Spring Boot Documentation](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
 - [Spring Security Reference](https://docs.spring.io/spring-security/reference/)
@@ -769,18 +700,6 @@ Mỗi ngày trả lời 3 câu:
 - [Crossref REST API](https://api.crossref.org/swagger-ui/index.html)
 - [Semantic Scholar API](https://api.semanticscholar.org/graph/v1)
 - [React Documentation](https://react.dev/)
-- [Ant Design Components](https://ant.design/components/overview/)
+- [Ant Design Component Library](https://ant.design/components/overview/)
 - [Recharts Documentation](https://recharts.org/en-US/)
 - [Flyway Documentation](https://flywaydb.org/documentation/)
-
----
-
-<div align="center">
-
-**Scientific Journal Publication Trend Tracking System**
-
-*Đồ án môn học Java — Nhóm 6 thành viên*
-
-*Thời gian thực hiện: 20/05/2026 → 10/07/2026*
-
-</div>
