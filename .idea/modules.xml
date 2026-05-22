@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/journal-trend-tracker.iml" filepath="$PROJECT_DIR$/.idea/journal-trend-tracker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/backend/com.journaltracker/journal-trend-tracker.iml" filepath="$PROJECT_DIR$/backend/com.journaltracker/journal-trend-tracker.iml" />
     </modules>
   </component>
 </project>
