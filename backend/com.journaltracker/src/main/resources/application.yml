@@ -1,6 +1,8 @@
 server:
   port: 8080
-
+jwt:
+  secret: mySuperSecretKeyForJwtAuthenticationSpringBootProject2026VerySecureSecretKey
+  expiration: 86400000
 spring:
   application:
     name: journal-trend-tracker
@@ -22,3 +24,8 @@ logging:
   level:
     org.springframework.web: INFO
     com.journaltracker: DEBUG
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

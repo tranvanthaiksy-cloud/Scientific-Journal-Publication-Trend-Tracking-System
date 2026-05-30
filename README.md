@@ -40,20 +40,23 @@ A full-stack web application for tracking and analyzing scientific publication t
 
 ## Overview
 
-**Scientific Journal Publication Trend Tracking System** is an enterprise-grade web application that enables researchers, lecturers, and students to monitor, analyze, and visualize research publication trends in real time.
+**Scientific Journal Publication Trend Tracking System** is an enterprise-grade web application that enables
+researchers, lecturers, and students to monitor, analyze, and visualize research publication trends in real time.
 
-The system automatically aggregates publication data from three major academic APIs — OpenAlex, Crossref, and Semantic Scholar — performs trend analysis across keywords and topics, and presents the results through an interactive analytics dashboard.
+The system automatically aggregates publication data from three major academic APIs — OpenAlex, Crossref, and Semantic
+Scholar — performs trend analysis across keywords and topics, and presents the results through an interactive analytics
+dashboard.
 
 ### Key Highlights
 
-| Capability | Description |
-|------------|-------------|
-| Multi-source Aggregation | Simultaneous integration with three international academic APIs |
-| Trend Analytics | Growth rate calculation, emerging topic detection, year-over-year comparison |
-| Role-based Access Control | Four permission levels: RESEARCHER, LECTURER, STUDENT, ADMIN |
-| Automated Synchronization | Scheduled data sync with configurable cron intervals |
-| Notification System | Automated alerts when new publications match followed topics or journals |
-| Rich Visualization | Line charts, bar charts, pie charts, and word cloud components |
+| Capability                | Description                                                                  |
+|---------------------------|------------------------------------------------------------------------------|
+| Multi-source Aggregation  | Simultaneous integration with three international academic APIs              |
+| Trend Analytics           | Growth rate calculation, emerging topic detection, year-over-year comparison |
+| Role-based Access Control | Four permission levels: RESEARCHER, LECTURER, STUDENT, ADMIN                 |
+| Automated Synchronization | Scheduled data sync with configurable cron intervals                         |
+| Notification System       | Automated alerts when new publications match followed topics or journals     |
+| Rich Visualization        | Line charts, bar charts, pie charts, and word cloud components               |
 
 ---
 
@@ -191,43 +194,43 @@ Scheduled Trigger (Cron) / Admin Manual Trigger
 
 ### Backend
 
-| Layer | Technology | Version |
-|-------|------------|---------|
-| Framework | Spring Boot | 4.0.6 |
-| Language | Java | 17 |
-| Security | Spring Security 6 + jjwt | 0.12.5 |
-| Persistence | Spring Data JPA + Hibernate | Latest |
-| Database | MySQL | 8.x |
-| Schema Migration | Flyway | Latest |
-| External HTTP | Spring WebClient (WebFlux) | Latest |
-| Job Scheduling | Spring `@Scheduled` | Built-in |
-| Validation | Jakarta Bean Validation | Latest |
-| Object Mapping | MapStruct | 1.5.5 |
-| API Documentation | SpringDoc OpenAPI (Swagger UI) | 3.0.2 |
-| Logging | SLF4J + Logback | Built-in |
-| Testing | JUnit 5 + Mockito | Latest |
-| Build Tool | Apache Maven | Latest |
-| Utilities | Lombok | Latest |
+| Layer             | Technology                     | Version  |
+|-------------------|--------------------------------|----------|
+| Framework         | Spring Boot                    | 4.0.6    |
+| Language          | Java                           | 17       |
+| Security          | Spring Security 6 + jjwt       | 0.12.5   |
+| Persistence       | Spring Data JPA + Hibernate    | Latest   |
+| Database          | MySQL                          | 8.x      |
+| Schema Migration  | Flyway                         | Latest   |
+| External HTTP     | Spring WebClient (WebFlux)     | Latest   |
+| Job Scheduling    | Spring `@Scheduled`            | Built-in |
+| Validation        | Jakarta Bean Validation        | Latest   |
+| Object Mapping    | MapStruct                      | 1.5.5    |
+| API Documentation | SpringDoc OpenAPI (Swagger UI) | 3.0.2    |
+| Logging           | SLF4J + Logback                | Built-in |
+| Testing           | JUnit 5 + Mockito              | Latest   |
+| Build Tool        | Apache Maven                   | Latest   |
+| Utilities         | Lombok                         | Latest   |
 
 ### Frontend
 
-| Layer | Technology | Version |
-|-------|------------|---------|
-| Framework | React | 18 |
-| Build Tool | Vite | Latest |
-| UI Library | Ant Design | Latest |
-| Charting | Recharts | Latest |
-| HTTP Client | Axios | Latest |
-| Routing | React Router DOM | Latest |
-| State Management | Zustand | Latest |
-| Date Handling | Day.js | Latest |
+| Layer            | Technology       | Version |
+|------------------|------------------|---------|
+| Framework        | React            | 18      |
+| Build Tool       | Vite             | Latest  |
+| UI Library       | Ant Design       | Latest  |
+| Charting         | Recharts         | Latest  |
+| HTTP Client      | Axios            | Latest  |
+| Routing          | React Router DOM | Latest  |
+| State Management | Zustand          | Latest  |
+| Date Handling    | Day.js           | Latest  |
 
 ### External Data Sources
 
-| API | Purpose | Documentation |
-|-----|---------|---------------|
-| OpenAlex | Paper metadata aggregation | [docs.openalex.org](https://docs.openalex.org) |
-| Crossref | DOI resolution and citation data | [api.crossref.org](https://api.crossref.org) |
+| API              | Purpose                           | Documentation                                              |
+|------------------|-----------------------------------|------------------------------------------------------------|
+| OpenAlex         | Paper metadata aggregation        | [docs.openalex.org](https://docs.openalex.org)             |
+| Crossref         | DOI resolution and citation data  | [api.crossref.org](https://api.crossref.org)               |
 | Semantic Scholar | Citation graph and author metrics | [api.semanticscholar.org](https://api.semanticscholar.org) |
 
 ---
@@ -371,13 +374,13 @@ journal-trend-tracker/
 
 ## Prerequisites
 
-| Requirement | Minimum Version |
-|-------------|----------------|
-| Java (JDK) | 17 |
-| Apache Maven | 3.6 |
-| Node.js | 18 |
-| npm | 8 |
-| MySQL Server | 8.0 |
+| Requirement  | Minimum Version |
+|--------------|-----------------|
+| Java (JDK)   | 17              |
+| Apache Maven | 3.6             |
+| Node.js      | 18              |
+| npm          | 8               |
+| MySQL Server | 8.0             |
 
 ---
 
@@ -463,11 +466,11 @@ The frontend will be available at `http://localhost:5173`.
 
 ### 6. Default Credentials (Seeded Data)
 
-| Role | Username | Password |
-|------|----------|----------|
-| ADMIN | `admin` | `admin123` |
-| RESEARCHER | `researcher01` | `test123` |
-| STUDENT | `student01` | `test123` |
+| Role       | Username       | Password   |
+|------------|----------------|------------|
+| ADMIN      | `admin`        | `admin123` |
+| RESEARCHER | `researcher01` | `test123`  |
+| STUDENT    | `student01`    | `test123`  |
 
 > **Security notice:** Change all default passwords before deploying to any non-local environment.
 
@@ -477,14 +480,14 @@ The frontend will be available at `http://localhost:5173`.
 
 ### Backend
 
-| Key | Description | Example |
-|-----|-------------|---------|
-| `spring.datasource.url` | JDBC connection string | `jdbc:mysql://localhost:3306/journal_tracker_db` |
-| `spring.datasource.username` | Database username | `jtracker` |
-| `spring.datasource.password` | Database password | `yourpassword` |
-| `jwt.secret` | HMAC signing key (minimum 256 bits) | `your-secret-key` |
-| `jwt.expiration` | Token validity in milliseconds | `86400000` |
-| `server.port` | HTTP server port | `8080` |
+| Key                          | Description                         | Example                                          |
+|------------------------------|-------------------------------------|--------------------------------------------------|
+| `spring.datasource.url`      | JDBC connection string              | `jdbc:mysql://localhost:3306/journal_tracker_db` |
+| `spring.datasource.username` | Database username                   | `jtracker`                                       |
+| `spring.datasource.password` | Database password                   | `yourpassword`                                   |
+| `jwt.secret`                 | HMAC signing key (minimum 256 bits) | `your-secret-key`                                |
+| `jwt.expiration`             | Token validity in milliseconds      | `86400000`                                       |
+| `server.port`                | HTTP server port                    | `8080`                                           |
 
 ### Frontend
 
@@ -502,19 +505,19 @@ Full interactive documentation is available via Swagger UI at `http://localhost:
 
 ### Endpoint Groups
 
-| Group | Base Path | Description | Authentication |
-|-------|-----------|-------------|----------------|
-| Auth | `/api/auth` | Register, login, refresh token | Public |
-| Users | `/api/users` | Profile management, password change | Required |
-| Papers | `/api/papers` | Paper search and detail | Public (search) |
-| Journals | `/api/journals` | Journal listing and detail | Public |
-| Trends | `/api/trends` | Keyword and topic trend data | Required |
-| Dashboard | `/api/dashboard` | Aggregated statistics and trending | Required |
-| Bookmarks | `/api/bookmarks` | Personal bookmark management | Required |
-| Follows | `/api/follows` | Follow journals, topics, keywords | Required |
-| Notifications | `/api/notifications` | Notification listing and read state | Required |
-| Reports | `/api/reports` | Analytical reports and exports | Required |
-| Admin | `/api/admin` | User management, datasource config, sync trigger | ADMIN role |
+| Group         | Base Path            | Description                                      | Authentication  |
+|---------------|----------------------|--------------------------------------------------|-----------------|
+| Auth          | `/api/auth`          | Register, login, refresh token                   | Public          |
+| Users         | `/api/users`         | Profile management, password change              | Required        |
+| Papers        | `/api/papers`        | Paper search and detail                          | Public (search) |
+| Journals      | `/api/journals`      | Journal listing and detail                       | Public          |
+| Trends        | `/api/trends`        | Keyword and topic trend data                     | Required        |
+| Dashboard     | `/api/dashboard`     | Aggregated statistics and trending               | Required        |
+| Bookmarks     | `/api/bookmarks`     | Personal bookmark management                     | Required        |
+| Follows       | `/api/follows`       | Follow journals, topics, keywords                | Required        |
+| Notifications | `/api/notifications` | Notification listing and read state              | Required        |
+| Reports       | `/api/reports`       | Analytical reports and exports                   | Required        |
+| Admin         | `/api/admin`         | User management, datasource config, sync trigger | ADMIN role      |
 
 ### Unified Response Envelope
 
@@ -557,16 +560,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ### HTTP Status Code Conventions
 
-| Status | Meaning |
-|--------|---------|
-| `200 OK` | Request succeeded |
-| `201 Created` | Resource created successfully |
-| `400 Bad Request` | Validation failure or malformed request |
-| `401 Unauthorized` | Missing or invalid JWT token |
-| `403 Forbidden` | Authenticated but insufficient role |
-| `404 Not Found` | Requested resource does not exist |
-| `409 Conflict` | Duplicate resource (e.g., username already taken) |
-| `500 Internal Server Error` | Unexpected server-side error |
+| Status                      | Meaning                                           |
+|-----------------------------|---------------------------------------------------|
+| `200 OK`                    | Request succeeded                                 |
+| `201 Created`               | Resource created successfully                     |
+| `400 Bad Request`           | Validation failure or malformed request           |
+| `401 Unauthorized`          | Missing or invalid JWT token                      |
+| `403 Forbidden`             | Authenticated but insufficient role               |
+| `404 Not Found`             | Requested resource does not exist                 |
+| `409 Conflict`              | Duplicate resource (e.g., username already taken) |
+| `500 Internal Server Error` | Unexpected server-side error                      |
 
 ---
 
@@ -591,24 +594,25 @@ keywords
 api_data_sources   (standalone configuration table)
 ```
 
-| Table | Description |
-|-------|-------------|
-| `users` | User accounts with role assignment |
-| `research_papers` | Scientific papers (DOI-unique) |
-| `journals` | Academic journals |
-| `authors` | Paper authors with external API IDs |
-| `keywords` | Research keywords with usage counters |
-| `research_topics` | Aggregated research topic groups |
-| `publication_trends` | Year-over-year trend data per keyword |
-| `bookmarks` | User-saved papers |
-| `notifications` | System notifications per user |
-| `follows` | User subscriptions to journals, topics, or keywords |
-| `api_data_sources` | External API source configuration |
-| `paper_authors` | Junction: papers ↔ authors |
-| `paper_keywords` | Junction: papers ↔ keywords |
-| `topic_keywords` | Junction: topics ↔ keywords |
+| Table                | Description                                         |
+|----------------------|-----------------------------------------------------|
+| `users`              | User accounts with role assignment                  |
+| `research_papers`    | Scientific papers (DOI-unique)                      |
+| `journals`           | Academic journals                                   |
+| `authors`            | Paper authors with external API IDs                 |
+| `keywords`           | Research keywords with usage counters               |
+| `research_topics`    | Aggregated research topic groups                    |
+| `publication_trends` | Year-over-year trend data per keyword               |
+| `bookmarks`          | User-saved papers                                   |
+| `notifications`      | System notifications per user                       |
+| `follows`            | User subscriptions to journals, topics, or keywords |
+| `api_data_sources`   | External API source configuration                   |
+| `paper_authors`      | Junction: papers ↔ authors                          |
+| `paper_keywords`     | Junction: papers ↔ keywords                         |
+| `topic_keywords`     | Junction: topics ↔ keywords                         |
 
-For the full schema definition including column types and constraints, see [`docs/database_schema.md`](docs/database_schema.md).
+For the full schema definition including column types and constraints, see [
+`docs/database_schema.md`](docs/database_schema.md).
 
 ---
 
@@ -616,11 +620,11 @@ For the full schema definition including column types and constraints, see [`doc
 
 ### Branch Naming Convention
 
-| Branch Type | Pattern | Example |
-|-------------|---------|---------|
-| Feature | `feature/<module>` | `feature/auth-api` |
-| Bug Fix | `bugfix/<description>` | `bugfix/login-500-error` |
-| Hot Fix | `hotfix/<description>` | `hotfix/jwt-expiry-null` |
+| Branch Type | Pattern                | Example                  |
+|-------------|------------------------|--------------------------|
+| Feature     | `feature/<module>`     | `feature/auth-api`       |
+| Bug Fix     | `bugfix/<description>` | `bugfix/login-500-error` |
+| Hot Fix     | `hotfix/<description>` | `hotfix/jwt-expiry-null` |
 
 ### Branch Strategy
 
