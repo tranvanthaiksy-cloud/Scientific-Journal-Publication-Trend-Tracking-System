@@ -1,7 +1,7 @@
 package com.journaltracker.mapper;
 
-import com.journaltracker.dto.PaperResponse;
-import com.journaltracker.dto.PaperSummaryResponse;
+import com.journaltracker.dto.response.PaperResponse;
+import com.journaltracker.dto.response.PaperSummaryResponse;
 import com.journaltracker.entity.ResearchPaper;
 import org.mapstruct.Mapper;
 

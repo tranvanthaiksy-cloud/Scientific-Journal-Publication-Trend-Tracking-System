@@ -33,7 +33,7 @@ public class JwtTokenProvider {
                         now.getTime() + jwtExpiration
                 );
         return Jwts.builder()
-                .claims(getClaimsUser(userDetails))
+                .claims(claims)
                 .subject(userDetails.getUsername())
                 .issuedAt(now)
                 .expiration(expiryDate)

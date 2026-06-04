@@ -24,6 +24,7 @@ public class Author {
     @Column(name = "external_id")
     String externalId;
 
+    @Column(name = "affiliation")
     String affiliation;
 
     @ManyToMany(mappedBy = "authors")
