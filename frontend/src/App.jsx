@@ -1,31 +1,57 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 
-function HomePage() {
-  return <h1>Hello World</h1>;
-}
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import "./App.css";
 
-function LoginPage() {
-  return <h1>Login Page</h1>;
-}
+function Dashboard() {
+  const navigate = useNavigate();
 
-function DashboardPage() {
-  return <h1>Dashboard Page</h1>;
-}
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
-function NotFoundPage() {
-  return <h1>404 Not Found</h1>;
+  return (
+      <div className="dashboard">
+        <h1>Dashboard</h1>
+
+        <button
+            className="logout-btn"
+            onClick={handleLogout}
+        >
+          Logout
+        </button>
+      </div>
+  );
 }
 
 function App() {
+  const token = localStorage.getItem("token");
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </BrowserRouter>
+      <BrowserRouter>
+        <Routes>
+          <Route
+              path="/"
+              element={
+                token
+                    ? <Navigate to="/dashboard" />
+                    : <Navigate to="/login" />
+              }
+          />
+
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
+      </BrowserRouter>
   );
 }
 
