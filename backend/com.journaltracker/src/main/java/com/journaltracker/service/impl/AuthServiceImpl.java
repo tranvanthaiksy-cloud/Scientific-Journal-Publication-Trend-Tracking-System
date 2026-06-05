@@ -1,6 +1,7 @@
 package com.journaltracker.service.impl;
 
 import com.journaltracker.dto.request.LoginRequest;
+import com.journaltracker.dto.request.RefreshTokenRequest;
 import com.journaltracker.dto.request.RegisterRequest;
 import com.journaltracker.dto.response.AuthResponse;
 import com.journaltracker.entity.User;
@@ -76,6 +77,23 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
+        String token = jwtTokenProvider.generateToken(toUserDetails(user));
+
+        return AuthResponse.builder()
+                .token(token)
+                .tokenType("Bearer")
+                .username(user.getUsername())
+                .role(user.getRole())
+                .build();
+    }
+
+    @Override
+    public AuthResponse refreshToken(RefreshTokenRequest request) {
+        String username = jwtTokenProvider.getUsernameFromRefreshableToken(request.getToken())
+                .orElseThrow(() -> new UnauthorizedException("Invalid or expired token"));
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UnauthorizedException("Invalid or expired token"));
         String token = jwtTokenProvider.generateToken(toUserDetails(user));
 
         return AuthResponse.builder()
