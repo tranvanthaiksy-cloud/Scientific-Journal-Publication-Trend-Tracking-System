@@ -10,6 +10,7 @@ Phân hệ phân tích xu hướng (**Trend Analysis Engine**) đóng vai trò c
 Trong hệ thống, JP-29 đóng vai trò kết nối trực tiếp sau khi luồng dữ liệu **JP-24 (Core Sync Engine)** hoàn tất:
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 graph TD
     subgraph Ingestion [Phân hệ Thu thập - JP-24]
         A[DataSyncService] -->|1. Lưu bài báo mới| B[(Database: MySQL)]
@@ -103,6 +104,7 @@ Quy trình hoạt động của phân hệ gồm 2 luồng độc lập dưới 
 Tiến trình này chạy ngầm ngay sau khi đồng bộ dữ liệu để cập nhật lại các chỉ số thống kê.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 sequenceDiagram
     autonumber
     participant Sched as Scheduler/Admin
@@ -142,6 +144,7 @@ sequenceDiagram
 Xử lý các yêu cầu lấy thông tin của người dùng từ giao diện Dashboard.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 sequenceDiagram
     autonumber
     actor User as Nhà nghiên cứu (FE)

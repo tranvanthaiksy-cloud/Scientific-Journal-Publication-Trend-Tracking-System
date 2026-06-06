@@ -7,6 +7,7 @@
 ## 1. 🔄 Sơ Đồ Hoạt Động Tổng Quan Hệ Thống
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(("🚀 Start")) --> A["👤 User truy cập hệ thống"]
     A --> B{"Đã đăng nhập?"}
@@ -62,6 +63,7 @@ flowchart TD
 ### 2.1 Đăng Ký Tài Khoản
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(("Start")) --> A["👤 User nhập thông tin đăng ký:\nusername, email, password, fullName, role"]
     A --> B["📡 POST /api/auth/register"]
@@ -84,6 +86,7 @@ flowchart TD
 ### 2.2 Đăng Nhập & JWT
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(("Start")) --> A["👤 User nhập username + password"]
     A --> B["📡 POST /api/auth/login"]
@@ -112,6 +115,7 @@ flowchart TD
 ## 3. 🛡️ Sơ Đồ Hoạt Động — JWT Authentication Filter (Request Pipeline)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(("HTTP Request")) --> A["JwtAuthenticationFilter\n.doFilterInternal()"]
     A --> B["Đọc header: Authorization"]
@@ -144,6 +148,7 @@ flowchart TD
 ### 4.1 syncFromSource — Đồng bộ từ 1 nguồn
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(("Start")) --> A["Nhận: sourceName, query"]
     A --> B["findExternalApiClient(sourceName)\nTìm client trong clientList"]
@@ -174,6 +179,7 @@ flowchart TD
 ### 4.2 processSinglePapper — Xử lý từng bài báo
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(("Nhận RawPaperData")) --> A{"isDuplicate?\n(check DOI hoặc Title)"}
 
@@ -218,6 +224,7 @@ flowchart TD
 ### 4.3 syncAllSources — Đồng bộ tất cả nguồn
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(("Start")) --> A["Nhận: query"]
     A --> B["Tạo SyncResult tổng\nsourceName = 'ALL'"]
@@ -247,6 +254,7 @@ flowchart TD
 ### 5.1 recalculateTrends — Tính toán lại xu hướng
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(("Start")) --> A["🗑️ publicationTrendRepository\n.deleteAllInBatch()\nXóa tất cả trends cũ"]
 
@@ -291,6 +299,7 @@ flowchart TD
 ### 5.2 getTrendByKeyword — Xem trend theo keyword
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(("Start")) --> A["Nhận: keyword, yearFrom, yearTo"]
     A --> B["📡 GET /api/trends/keyword/{keyword}\n?yearFrom=&yearTo="]
@@ -303,6 +312,7 @@ flowchart TD
 ### 5.3 compareTrends — So sánh xu hướng nhiều keywords
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(("Start")) --> A["Nhận: List keywords,\nyearFrom, yearTo"]
     A --> B["📡 GET /api/trends/compare\n?keywords=AI,ML&yearFrom=&yearTo="]
@@ -318,6 +328,7 @@ flowchart TD
 ### 5.4 getTopTrendingTopics — Lấy top xu hướng
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(("Start")) --> A["Nhận: limit"]
     A --> B["📡 GET /api/trends/topics/trending\n?limit="]
@@ -335,6 +346,7 @@ flowchart TD
 ## 6. 🔍 Sơ Đồ Hoạt Động — Tìm Kiếm Bài Báo
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(("Start")) --> A["👤 User nhập từ khóa tìm kiếm"]
     A --> B["📡 GET /api/papers/search\n?keyword=...&page=0&size=10\n(permitAll - không cần JWT)"]
@@ -355,6 +367,7 @@ flowchart TD
 ## 7. 🌐 Sơ Đồ Hoạt Động — OpenAlex Client (Fetch Papers)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(("fetchPapers\n(query, page, size)")) --> A["normalizeSize(size)\nnormalizePage(page)"]
     A --> B["papers = new ArrayList"]
@@ -398,6 +411,7 @@ flowchart TD
 ## 8. 📊 Sơ Đồ Hoạt Động Tổng Hợp — Luồng Dữ Liệu End-to-End
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart LR
     subgraph Trigger["🎯 Trigger"]
         ADMIN["👨‍💼 Admin\nManual Trigger"]
@@ -456,6 +470,7 @@ flowchart LR
 ### 9.1 ERD Đầy Đủ (phản ánh chính xác source code)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 erDiagram
     users {
         BIGINT id PK "AUTO_INCREMENT"

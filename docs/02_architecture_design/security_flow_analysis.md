@@ -15,6 +15,7 @@
 ## 1. Sơ đồ tổng quan kiến trúc Security
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TB
     A(["🌐 Client\nBrowser hoặc Postman"])
     B["⚙️ SecurityFilterChain\nSecurityConfig.java"]
@@ -76,6 +77,7 @@ flowchart TB
 > Hiện tại bạn **chưa có API đăng nhập thực sự** (`/api/auth/login`). File [Controller.java](file:///d:/Document/Java/journal-trend-tracker/Scientific-Journal-Publication-Trend-Tracking-System/backend/com.journaltracker/src/main/java/com/journaltracker/Controller.java) đang tạm hardcode tạo token cho user "thai". Dưới đây là luồng đúng mà bạn cần xây dựng.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 sequenceDiagram
     actor Client
     participant AuthController as AuthController<br/>/api/auth/login
@@ -112,6 +114,7 @@ sequenceDiagram
 ## 3. Luồng XÁC THỰC (Authentication) — Mỗi request kèm Token
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 sequenceDiagram
     actor Client
     participant Filter as JwtAuthenticationFilter
@@ -163,6 +166,7 @@ sequenceDiagram
 ## 4. Cấu trúc JWT Token
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 graph LR
     subgraph "JWT Token = 3 phần, ngăn cách bởi dấu chấm (.)"
         A["Header<br/>(Base64)"] --- B["Payload<br/>(Base64)"] --- C["Signature<br/>(HMAC-SHA512)"]
@@ -322,6 +326,7 @@ jwt:
 ## 7. Sơ đồ quan hệ giữa các file
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 graph TD
     Config["SecurityConfig.java<br/>📋 Cấu hình"] -->|inject| Filter["JwtAuthenticationFilter.java<br/>🔍 Filter"]
     Config -->|tạo Bean| Encoder["BCryptPasswordEncoder<br/>🔒 Mã hóa password"]

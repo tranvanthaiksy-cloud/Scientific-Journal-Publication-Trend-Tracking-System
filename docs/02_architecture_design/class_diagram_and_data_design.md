@@ -8,6 +8,7 @@
 ## 1. 🏛️ Class Diagram Tổng Quan — Kiến Trúc Phân Tầng (Layered Architecture)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 classDiagram
     direction TB
 
@@ -136,6 +137,7 @@ classDiagram
 ## 2. 📦 Class Diagram — Entity Layer (Domain Model)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 classDiagram
     direction LR
 
@@ -234,6 +236,7 @@ classDiagram
 ## 3. 🔐 Class Diagram — Security Layer
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 classDiagram
     direction TB
 
@@ -286,6 +289,7 @@ classDiagram
 ## 4. 🌐 Class Diagram — External API Client Layer
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 classDiagram
     direction TB
 
@@ -348,6 +352,7 @@ classDiagram
 ## 5. 📨 Class Diagram — DTO Layer
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 classDiagram
     direction TB
 
@@ -464,6 +469,7 @@ classDiagram
 ## 6. 🗺️ Class Diagram — Mapper & Exception Layer
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 classDiagram
     direction TB
 
@@ -527,6 +533,7 @@ classDiagram
 ## 7. ⚙️ Class Diagram — Configuration Layer
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 classDiagram
     direction TB
 
@@ -562,6 +569,7 @@ classDiagram
 ## 8. 📊 Class Diagram Tổng Hợp — Quan Hệ Giữa Các Tầng
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 classDiagram
     direction TB
 
@@ -676,6 +684,7 @@ classDiagram
 ### 9.1 ERD (Entity Relationship Diagram)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 erDiagram
     users {
         BIGINT id PK "AUTO_INCREMENT"
@@ -1006,6 +1015,7 @@ CREATE INDEX idx_author_ext_id   ON authors(external_id);
 ### 9.5 Data Flow — Luồng Dữ Liệu Trong Hệ Thống
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart LR
     subgraph External["🌐 External APIs"]
         OA["OpenAlex API"]
