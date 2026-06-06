@@ -1,5 +1,10 @@
-import axiosInstance from './axiosConfig';
+import axiosInstance from "./axiosConfig";
 
-export const loginApi = (data) => axiosInstance.post('/auth/login', data);
+export const loginApi = (data) =>
+    axiosInstance.post("/auth/login", data);
 
-export const registerApi = (data) => axiosInstance.post('/auth/register', data);
+export const registerApi = (data) =>
+    axiosInstance.post("/auth/register", data);
+
+export const refreshTokenApi = (data) =>
+    axiosInstance.post("/auth/refresh", data);
