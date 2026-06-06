@@ -1,0 +1,2826 @@
+{
+    "info": {
+        "_postman_id": "jtt-api-collection-2026",
+        "name": "Journal Trend Tracker — Full API Collection",
+        "description": "Bộ collection đầy đủ để test toàn bộ API endpoints của hệ thống Scientific Journal Publication Trend Tracking System.\n\n## Hướng dẫn sử dụng\n1. Import file này vào Postman.\n2. Chỉnh biến `base_url` nếu server chạy ở port khác 8080.\n3. Gọi **Register** hoặc **Login** trước → token sẽ tự động được lưu vào biến `auth_token`.\n4. Các request cần xác thực sẽ tự động dùng `{{auth_token}}`.\n\n## Tài khoản mặc định\n- Admin: admin / admin123\n- Researcher: researcher1 / password123\n- Student: student1 / password123",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8080",
+            "type": "string"
+        },
+        {
+            "key": "auth_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "admin_token",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "1. Authentication (EPIC-2)",
+            "description": "JP-9, JP-10, JP-11: Đăng ký, đăng nhập, refresh token.",
+            "item": [
+                {
+                    "name": "POST Register — Đăng ký tài khoản mới",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.body && jsonData.body.token) {",
+                                    "        pm.collectionVariables.set('auth_token', jsonData.body.token);",
+                                    "        console.log('✅ Token saved from register');",
+                                    "    }",
+                                    "    pm.test('Register thành công', function () {",
+                                    "        pm.expect(jsonData.success).to.eql(true);",
+                                    "    });",
+                                    "}",
+                                    "pm.test('Status code is 201', function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"testuser01\",\n    \"email\": \"testuser01@gmail.com\",\n    \"password\": \"Password123!\",\n    \"fullName\": \"Test User 01\",\n    \"role\": \"RESEARCHER\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "register"
+                            ]
+                        },
+                        "description": "**JP-9** — Đăng ký tài khoản mới.\n- Role hợp lệ: RESEARCHER, LECTURER, STUDENT (không cho phép ADMIN).\n- Username và email phải unique.\n- Password tối thiểu 6 ký tự."
+                    }
+                },
+                {
+                    "name": "POST Register — Duplicate username (expect 409)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"testuser01\",\n    \"email\": \"another@gmail.com\",\n    \"password\": \"Password123!\",\n    \"fullName\": \"Duplicate User\",\n    \"role\": \"STUDENT\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "register"
+                            ]
+                        },
+                        "description": "Test đăng ký với username đã tồn tại → expect HTTP 409 Conflict."
+                    }
+                },
+                {
+                    "name": "POST Register — Missing fields (expect 400)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"\",\n    \"email\": \"invalid-email\",\n    \"password\": \"123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "register"
+                            ]
+                        },
+                        "description": "Test validation — thiếu fields bắt buộc → expect HTTP 400 kèm validation errors."
+                    }
+                },
+                {
+                    "name": "POST Login — Đăng nhập (Researcher)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.body && jsonData.body.token) {",
+                                    "        pm.collectionVariables.set('auth_token', jsonData.body.token);",
+                                    "        console.log('✅ auth_token saved');",
+                                    "    }",
+                                    "    pm.test('Login thành công', function () {",
+                                    "        pm.expect(jsonData.success).to.eql(true);",
+                                    "        pm.expect(jsonData.body.token).to.be.a('string');",
+                                    "    });",
+                                    "}",
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"researcher1\",\n    \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "**JP-10** — Đăng nhập bằng username/password.\n- Trả về JWT token.\n- Token tự động lưu vào biến `auth_token`."
+                    }
+                },
+                {
+                    "name": "POST Login — Admin",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.body && jsonData.body.token) {",
+                                    "        pm.collectionVariables.set('admin_token', jsonData.body.token);",
+                                    "        pm.collectionVariables.set('auth_token', jsonData.body.token);",
+                                    "        console.log('✅ admin_token saved');",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "Đăng nhập bằng tài khoản Admin.\nToken lưu vào cả `auth_token` và `admin_token`."
+                    }
+                },
+                {
+                    "name": "POST Login — Wrong password (expect 401)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"wrongpassword\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "Test đăng nhập sai password → expect HTTP 401."
+                    }
+                },
+                {
+                    "name": "POST Refresh Token",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.body && jsonData.body.token) {",
+                                    "        pm.collectionVariables.set('auth_token', jsonData.body.token);",
+                                    "        console.log('✅ Token refreshed');",
+                                    "    }",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"token\": \"{{auth_token}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/refresh",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "refresh"
+                            ]
+                        },
+                        "description": "**JP-11** — Refresh token trước khi hết hạn.\nToken mới tự động lưu vào biến `auth_token`."
+                    }
+                },
+                {
+                    "name": "GET Test OpenAlex (Debug)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/test",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "test"
+                            ]
+                        },
+                        "description": "Endpoint debug — gọi OpenAlex API fetch 10 papers về \"machine learning\"."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "2. User Profile (EPIC-2)",
+            "description": "JP-12: Xem và cập nhật thông tin cá nhân, đổi mật khẩu.",
+            "item": [
+                {
+                    "name": "GET My Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/users/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "users",
+                                "me"
+                            ]
+                        },
+                        "description": "**JP-12** — Lấy thông tin profile user đang đăng nhập.\nKhông chứa password trong response."
+                    }
+                },
+                {
+                    "name": "PUT Update Profile",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"fullName\": \"Nguyễn Văn A Updated\",\n    \"email\": \"updated_email@gmail.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/users/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "users",
+                                "me"
+                            ]
+                        },
+                        "description": "Cập nhật thông tin cá nhân (fullName, email)."
+                    }
+                },
+                {
+                    "name": "PUT Change Password",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"currentPassword\": \"password123\",\n    \"newPassword\": \"NewPassword456!\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/users/me/password",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "users",
+                                "me",
+                                "password"
+                            ]
+                        },
+                        "description": "Đổi mật khẩu. Cần nhập đúng currentPassword."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3. Admin — User Management (EPIC-2)",
+            "description": "JP-13: Admin quản lý danh sách users, phân quyền, kích hoạt/vô hiệu hóa.",
+            "item": [
+                {
+                    "name": "GET All Users (paginated)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/admin/users?page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "**JP-13** — Danh sách users phân trang. Yêu cầu role ADMIN."
+                    }
+                },
+                {
+                    "name": "GET Users — Search by username",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/admin/users?search=nguyen&page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "nguyen"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "Tìm user theo username hoặc email."
+                    }
+                },
+                {
+                    "name": "GET Users — Filter by role",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/admin/users?role=STUDENT&page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users"
+                            ],
+                            "query": [
+                                {
+                                    "key": "role",
+                                    "value": "STUDENT"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "Lọc users theo role: RESEARCHER, LECTURER, STUDENT, ADMIN."
+                    }
+                },
+                {
+                    "name": "GET User by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/admin/users/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users",
+                                "1"
+                            ]
+                        },
+                        "description": "Xem chi tiết user theo ID."
+                    }
+                },
+                {
+                    "name": "PUT Toggle User Status (activate/deactivate)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"isActive\": false\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/admin/users/2/status",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users",
+                                "2",
+                                "status"
+                            ]
+                        },
+                        "description": "Kích hoạt hoặc vô hiệu hóa tài khoản user.\nAdmin không thể vô hiệu hóa chính mình."
+                    }
+                },
+                {
+                    "name": "PUT Change User Role",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"role\": \"RESEARCHER\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/admin/users/2/role",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "users",
+                                "2",
+                                "role"
+                            ]
+                        },
+                        "description": "Thay đổi role cho user. Chỉ ADMIN mới được."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "4. Paper & Search (EPIC-3)",
+            "description": "JP-18, JP-19: Tìm kiếm bài báo, xem chi tiết.",
+            "item": [
+                {
+                    "name": "GET Search Papers — by keyword",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/papers/search?keyword=machine learning&page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "papers",
+                                "search"
+                            ],
+                            "query": [
+                                {
+                                    "key": "keyword",
+                                    "value": "machine learning"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "**JP-18** — Tìm bài báo theo keyword (trong title + abstract).\nAPI PUBLIC — không cần JWT."
+                    }
+                },
+                {
+                    "name": "GET Search Papers — by author",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/papers/search?author=John&page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "papers",
+                                "search"
+                            ],
+                            "query": [
+                                {
+                                    "key": "author",
+                                    "value": "John"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "Tìm bài báo theo tên tác giả."
+                    }
+                },
+                {
+                    "name": "GET Search Papers — by journal",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/papers/search?journal=IEEE&page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "papers",
+                                "search"
+                            ],
+                            "query": [
+                                {
+                                    "key": "journal",
+                                    "value": "IEEE"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "Tìm bài báo theo tên journal."
+                    }
+                },
+                {
+                    "name": "GET Search Papers — combined filters",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/papers/search?keyword=AI&yearFrom=2023&yearTo=2026&sortBy=publicationYear&sortDir=desc&page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "papers",
+                                "search"
+                            ],
+                            "query": [
+                                {
+                                    "key": "keyword",
+                                    "value": "AI"
+                                },
+                                {
+                                    "key": "yearFrom",
+                                    "value": "2023"
+                                },
+                                {
+                                    "key": "yearTo",
+                                    "value": "2026"
+                                },
+                                {
+                                    "key": "sortBy",
+                                    "value": "publicationYear"
+                                },
+                                {
+                                    "key": "sortDir",
+                                    "value": "desc"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "Tìm kiếm kết hợp nhiều filter: keyword + year range + sort."
+                    }
+                },
+                {
+                    "name": "GET Search Papers — no params (all papers)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/papers/search?page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "papers",
+                                "search"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "Không truyền filter → trả về toàn bộ papers (phân trang)."
+                    }
+                },
+                {
+                    "name": "GET Paper Detail by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/papers/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "papers",
+                                "1"
+                            ]
+                        },
+                        "description": "**JP-19** — Xem chi tiết bài báo: title, abstract, authors, keywords, journal."
+                    }
+                },
+                {
+                    "name": "GET Paper Detail — Not Found (expect 404)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/papers/999999",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "papers",
+                                "999999"
+                            ]
+                        },
+                        "description": "Test paper không tồn tại → expect HTTP 404."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "5. Journal & Author (EPIC-3)",
+            "description": "JP-20, JP-21: API journals, authors, keywords.",
+            "item": [
+                {
+                    "name": "GET All Journals",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/journals?page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "journals"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "**JP-20** — Danh sách journals phân trang."
+                    }
+                },
+                {
+                    "name": "GET Journal by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/journals/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "journals",
+                                "1"
+                            ]
+                        },
+                        "description": "Chi tiết journal theo ID."
+                    }
+                },
+                {
+                    "name": "GET Papers by Journal ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/journals/1/papers?page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "journals",
+                                "1",
+                                "papers"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "Danh sách papers thuộc journal cụ thể."
+                    }
+                },
+                {
+                    "name": "GET Papers by Author ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/authors/1/papers?page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "authors",
+                                "1",
+                                "papers"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "**JP-21** — Danh sách papers theo tác giả."
+                    }
+                },
+                {
+                    "name": "GET Top Keywords",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/keywords/top?limit=20",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "keywords",
+                                "top"
+                            ],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "20"
+                                }
+                            ]
+                        },
+                        "description": "Top keywords sắp xếp theo usage_count giảm dần."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "6. Trend Analysis (EPIC-4)",
+            "description": "JP-30: API endpoints phân tích xu hướng nghiên cứu.",
+            "item": [
+                {
+                    "name": "GET Trend by Keyword",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/trends/keyword/machine learning?yearFrom=2018&yearTo=2026",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "trends",
+                                "keyword",
+                                "machine learning"
+                            ],
+                            "query": [
+                                {
+                                    "key": "yearFrom",
+                                    "value": "2018"
+                                },
+                                {
+                                    "key": "yearTo",
+                                    "value": "2026"
+                                }
+                            ]
+                        },
+                        "description": "**JP-30** — Trend data theo 1 keyword.\nTrả về list `{ year, paperCount }` cho mỗi năm.\nAPI PUBLIC."
+                    }
+                },
+                {
+                    "name": "GET Compare Trends — multiple keywords",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/trends/compare?keywords=AI,deep learning,NLP&yearFrom=2020&yearTo=2026",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "trends",
+                                "compare"
+                            ],
+                            "query": [
+                                {
+                                    "key": "keywords",
+                                    "value": "AI,deep learning,NLP"
+                                },
+                                {
+                                    "key": "yearFrom",
+                                    "value": "2020"
+                                },
+                                {
+                                    "key": "yearTo",
+                                    "value": "2026"
+                                }
+                            ]
+                        },
+                        "description": "So sánh trend của nhiều keywords cùng lúc (comma-separated).\nTrả về multi-series data."
+                    }
+                },
+                {
+                    "name": "GET Top Trending Topics",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/trends/topics/trending?limit=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "trends",
+                                "topics",
+                                "trending"
+                            ],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "Top trending topics sắp xếp theo growth rate giảm dần."
+                    }
+                },
+                {
+                    "name": "GET Trend by Keyword — nonexistent (expect empty list)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/trends/keyword/xyznonexistentkeyword?yearFrom=2020&yearTo=2026",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "trends",
+                                "keyword",
+                                "xyznonexistentkeyword"
+                            ],
+                            "query": [
+                                {
+                                    "key": "yearFrom",
+                                    "value": "2020"
+                                },
+                                {
+                                    "key": "yearTo",
+                                    "value": "2026"
+                                }
+                            ]
+                        },
+                        "description": "Test keyword không tồn tại → trả về list rỗng, HTTP 200."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "7. Dashboard (EPIC-5)",
+            "description": "JP-34: API thống kê tổng quan hệ thống.",
+            "item": [
+                {
+                    "name": "GET Dashboard Stats",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/dashboard/stats",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "dashboard",
+                                "stats"
+                            ]
+                        },
+                        "description": "**JP-34** — Thống kê tổng quan: totalPapers, totalJournals, totalAuthors, totalKeywords.\nAPI PUBLIC."
+                    }
+                },
+                {
+                    "name": "GET Dashboard Trending Topics",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/dashboard/trending?limit=5",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "dashboard",
+                                "trending"
+                            ],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "5"
+                                }
+                            ]
+                        },
+                        "description": "Top trending topics cho dashboard."
+                    }
+                },
+                {
+                    "name": "GET Dashboard Recent Papers",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/dashboard/recent-papers?limit=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "dashboard",
+                                "recent-papers"
+                            ],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "10 bài báo mới nhất theo createdAt."
+                    }
+                },
+                {
+                    "name": "GET Dashboard Top Journals",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/dashboard/top-journals?limit=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "dashboard",
+                                "top-journals"
+                            ],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "Top 10 journals có nhiều papers nhất."
+                    }
+                },
+                {
+                    "name": "GET Dashboard Yearly Stats",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/dashboard/yearly-stats",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "dashboard",
+                                "yearly-stats"
+                            ]
+                        },
+                        "description": "Số lượng papers theo từng năm — dữ liệu cho Line Chart."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "8. Research Topics (EPIC-4)",
+            "description": "JP-31: CRUD Research Topics, gán keywords.",
+            "item": [
+                {
+                    "name": "GET All Topics (PUBLIC)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/topics?page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "topics"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "**JP-31** — Danh sách research topics phân trang. PUBLIC."
+                    }
+                },
+                {
+                    "name": "GET Topic by ID (PUBLIC)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/topics/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "topics",
+                                "1"
+                            ]
+                        },
+                        "description": "Chi tiết topic kèm keywords và trend data."
+                    }
+                },
+                {
+                    "name": "POST Create Topic (ADMIN)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Artificial Intelligence\",\n    \"description\": \"Research related to AI, ML, and deep learning\",\n    \"keywordIds\": [1, 2, 3]\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/topics",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "topics"
+                            ]
+                        },
+                        "description": "Tạo topic mới. Yêu cầu ADMIN role."
+                    }
+                },
+                {
+                    "name": "PUT Update Topic (ADMIN)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Artificial Intelligence — Updated\",\n    \"description\": \"Updated description for AI topic\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/topics/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "topics",
+                                "1"
+                            ]
+                        },
+                        "description": "Cập nhật topic. Yêu cầu ADMIN."
+                    }
+                },
+                {
+                    "name": "POST Add Keyword to Topic (ADMIN)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/topics/1/keywords/5",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "topics",
+                                "1",
+                                "keywords",
+                                "5"
+                            ]
+                        },
+                        "description": "Gán keyword id=5 vào topic id=1."
+                    }
+                },
+                {
+                    "name": "DELETE Remove Keyword from Topic (ADMIN)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/topics/1/keywords/5",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "topics",
+                                "1",
+                                "keywords",
+                                "5"
+                            ]
+                        },
+                        "description": "Xóa keyword khỏi topic."
+                    }
+                },
+                {
+                    "name": "DELETE Topic (ADMIN)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/topics/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "topics",
+                                "1"
+                            ]
+                        },
+                        "description": "Xóa topic. Không xóa keywords liên quan."
+                    }
+                },
+                {
+                    "name": "POST Create Topic — Without ADMIN (expect 403)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Test Topic\",\n    \"description\": \"Should fail\",\n    \"keywordIds\": [1]\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/topics",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "topics"
+                            ]
+                        },
+                        "description": "Test tạo topic với role STUDENT/RESEARCHER → expect HTTP 403."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "9. Bookmarks (EPIC-6)",
+            "description": "JP-41: Lưu/xóa/liệt kê bài báo yêu thích.",
+            "item": [
+                {
+                    "name": "POST Add Bookmark",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"paperId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/bookmarks",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "bookmarks"
+                            ]
+                        },
+                        "description": "**JP-41** — Bookmark bài báo. Yêu cầu JWT."
+                    }
+                },
+                {
+                    "name": "POST Add Bookmark — Duplicate (expect 409)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"paperId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/bookmarks",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "bookmarks"
+                            ]
+                        },
+                        "description": "Test bookmark trùng → expect HTTP 409."
+                    }
+                },
+                {
+                    "name": "GET My Bookmarks",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/bookmarks/me?page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "bookmarks",
+                                "me"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "Danh sách papers đã bookmark. Phân trang."
+                    }
+                },
+                {
+                    "name": "DELETE Remove Bookmark",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/bookmarks/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "bookmarks",
+                                "1"
+                            ]
+                        },
+                        "description": "Xóa bookmark paper id=1."
+                    }
+                },
+                {
+                    "name": "GET Bookmarks — Without token (expect 401)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/bookmarks/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "bookmarks",
+                                "me"
+                            ]
+                        },
+                        "description": "Test gọi API bookmark mà không có JWT → expect 401."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "10. Follow (EPIC-6)",
+            "description": "JP-42: Follow/Unfollow journals, topics, keywords.",
+            "item": [
+                {
+                    "name": "POST Follow Journal",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"followType\": \"JOURNAL\",\n    \"targetId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/follows",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "follows"
+                            ]
+                        },
+                        "description": "**JP-42** — Follow một journal."
+                    }
+                },
+                {
+                    "name": "POST Follow Topic",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"followType\": \"TOPIC\",\n    \"targetId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/follows",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "follows"
+                            ]
+                        },
+                        "description": "Follow một research topic."
+                    }
+                },
+                {
+                    "name": "POST Follow Keyword",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"followType\": \"KEYWORD\",\n    \"targetId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/follows",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "follows"
+                            ]
+                        },
+                        "description": "Follow một keyword."
+                    }
+                },
+                {
+                    "name": "POST Follow — Duplicate (expect 409)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"followType\": \"JOURNAL\",\n    \"targetId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/follows",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "follows"
+                            ]
+                        },
+                        "description": "Follow trùng → expect 409."
+                    }
+                },
+                {
+                    "name": "GET My Follows — All",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/follows/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "follows",
+                                "me"
+                            ]
+                        },
+                        "description": "Tất cả items đang follow (journals + topics + keywords)."
+                    }
+                },
+                {
+                    "name": "GET My Follows — Filter by JOURNAL",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/follows/me?type=JOURNAL",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "follows",
+                                "me"
+                            ],
+                            "query": [
+                                {
+                                    "key": "type",
+                                    "value": "JOURNAL"
+                                }
+                            ]
+                        },
+                        "description": "Chỉ lấy journals đang follow."
+                    }
+                },
+                {
+                    "name": "DELETE Unfollow",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/follows/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "follows",
+                                "1"
+                            ]
+                        },
+                        "description": "Unfollow theo follow id."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "11. Notifications (EPIC-6)",
+            "description": "JP-43: Thông báo khi có bài báo mới.",
+            "item": [
+                {
+                    "name": "GET My Notifications",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/notifications?page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "notifications"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "**JP-43** — Danh sách notifications phân trang. Mới nhất lên trước."
+                    }
+                },
+                {
+                    "name": "GET Unread Count",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/notifications/unread-count",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "notifications",
+                                "unread-count"
+                            ]
+                        },
+                        "description": "Số thông báo chưa đọc (cho badge icon chuông)."
+                    }
+                },
+                {
+                    "name": "PUT Mark as Read",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/notifications/1/read",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "notifications",
+                                "1",
+                                "read"
+                            ]
+                        },
+                        "description": "Đánh dấu notification id=1 đã đọc."
+                    }
+                },
+                {
+                    "name": "PUT Mark All as Read",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/notifications/read-all",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "notifications",
+                                "read-all"
+                            ]
+                        },
+                        "description": "Đánh dấu tất cả notifications đã đọc."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "12. Admin — Data Sources & Sync (EPIC-4)",
+            "description": "JP-32: Quản lý nguồn API, trigger sync thủ công.",
+            "item": [
+                {
+                    "name": "GET All Data Sources",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/admin/datasources",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "datasources"
+                            ]
+                        },
+                        "description": "**JP-32** — Danh sách các nguồn API dữ liệu. ADMIN only."
+                    }
+                },
+                {
+                    "name": "PUT Update Data Source",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"isActive\": false\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/admin/datasources/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "datasources",
+                                "1"
+                            ]
+                        },
+                        "description": "Bật/tắt data source. Tắt → scheduler không sync source này."
+                    }
+                },
+                {
+                    "name": "POST Trigger Manual Sync",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"sourceName\": \"OpenAlex\",\n    \"query\": \"computer science\",\n    \"maxPages\": 3\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/admin/sync/trigger",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "sync",
+                                "trigger"
+                            ]
+                        },
+                        "description": "Trigger sync thủ công. Trả về SyncResult."
+                    }
+                },
+                {
+                    "name": "GET Sync Status",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/admin/sync/status",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "sync",
+                                "status"
+                            ]
+                        },
+                        "description": "Trạng thái sync gần nhất."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "13. Reports (EPIC-7)",
+            "description": "JP-47: Sinh báo cáo phân tích xu hướng.",
+            "item": [
+                {
+                    "name": "POST Generate Report",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"AI Research Trend Report 2024-2026\",\n    \"keywords\": [\"artificial intelligence\", \"machine learning\", \"deep learning\"],\n    \"yearFrom\": 2024,\n    \"yearTo\": 2026,\n    \"format\": \"JSON\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/reports/generate",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "reports",
+                                "generate"
+                            ]
+                        },
+                        "description": "**JP-47** — Sinh report phân tích xu hướng. Yêu cầu JWT."
+                    }
+                },
+                {
+                    "name": "GET Report History",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/reports/history?page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "reports",
+                                "history"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "Lịch sử reports user đã tạo."
+                    }
+                },
+                {
+                    "name": "GET Report by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/reports/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "reports",
+                                "1"
+                            ]
+                        },
+                        "description": "Xem lại report cũ."
+                    }
+                },
+                {
+                    "name": "GET Download Report PDF",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{auth_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/reports/1/download",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "reports",
+                                "1",
+                                "download"
+                            ]
+                        },
+                        "description": "Tải report dạng PDF (optional feature)."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "14. E2E Test Flows (EPIC-8)",
+            "description": "JP-50: Các luồng test tích hợp End-to-End.",
+            "item": [
+                {
+                    "name": "Flow 1: Auth — Register → Login → Profile",
+                    "description": "1. Register user mới\n2. Login → lấy token\n3. GET /users/me → verify profile\n4. PUT /users/me → update\n5. PUT /users/me/password → đổi pass\n6. Login lại bằng pass mới",
+                    "item": [
+                        {
+                            "name": "1. Register new user",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "pm.test('Register OK', function () {",
+                                            "    pm.response.to.have.status(201);",
+                                            "});"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"username\": \"e2e_user_flow1\",\n    \"email\": \"e2e_flow1@test.com\",\n    \"password\": \"TestPass123\",\n    \"fullName\": \"E2E Flow 1 User\",\n    \"role\": \"RESEARCHER\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/auth/register",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "auth",
+                                        "register"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "2. Login with new user",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "pm.test('Login OK', function () {",
+                                            "    pm.response.to.have.status(200);",
+                                            "});",
+                                            "var jsonData = pm.response.json();",
+                                            "if (jsonData.body && jsonData.body.token) {",
+                                            "    pm.collectionVariables.set('auth_token', jsonData.body.token);",
+                                            "}"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"username\": \"e2e_user_flow1\",\n    \"password\": \"TestPass123\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/auth/login",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "auth",
+                                        "login"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "3. Get my profile",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "pm.test('Profile retrieved', function () {",
+                                            "    pm.response.to.have.status(200);",
+                                            "});"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{auth_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/users/me",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "users",
+                                        "me"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Flow 2: Search → Bookmark → Unbookmark",
+                    "description": "1. Search papers\n2. Bookmark paper\n3. GET bookmarks → verify\n4. Remove bookmark",
+                    "item": [
+                        {
+                            "name": "1. Search papers",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/papers/search?keyword=machine learning&page=0&size=5",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "papers",
+                                        "search"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "keyword",
+                                            "value": "machine learning"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "0"
+                                        },
+                                        {
+                                            "key": "size",
+                                            "value": "5"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "2. Bookmark paper #1",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{auth_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \"paperId\": 1 }"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/bookmarks",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "bookmarks"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "3. Verify bookmarks list",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{auth_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/bookmarks/me",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "bookmarks",
+                                        "me"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "4. Remove bookmark",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{auth_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/bookmarks/1",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "bookmarks",
+                                        "1"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Flow 3: Trend Analysis",
+                    "description": "1. Dashboard stats\n2. Trending topics\n3. Trend by keyword\n4. Compare trends",
+                    "item": [
+                        {
+                            "name": "1. Dashboard stats",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/dashboard/stats",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "dashboard",
+                                        "stats"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "2. Trending topics",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/trends/topics/trending?limit=10",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "trends",
+                                        "topics",
+                                        "trending"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "limit",
+                                            "value": "10"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "3. Trend for 'AI'",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/trends/keyword/AI?yearFrom=2020&yearTo=2026",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "trends",
+                                        "keyword",
+                                        "AI"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "yearFrom",
+                                            "value": "2020"
+                                        },
+                                        {
+                                            "key": "yearTo",
+                                            "value": "2026"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "4. Compare AI vs blockchain",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/trends/compare?keywords=AI,blockchain&yearFrom=2020&yearTo=2026",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "trends",
+                                        "compare"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "keywords",
+                                            "value": "AI,blockchain"
+                                        },
+                                        {
+                                            "key": "yearFrom",
+                                            "value": "2020"
+                                        },
+                                        {
+                                            "key": "yearTo",
+                                            "value": "2026"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Flow 4: Admin Sync",
+                    "description": "1. Login Admin\n2. View datasources\n3. Trigger sync\n4. Check sync status\n5. Search for new papers",
+                    "item": [
+                        {
+                            "name": "1. Login Admin",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "var jsonData = pm.response.json();",
+                                            "if (jsonData.body && jsonData.body.token) {",
+                                            "    pm.collectionVariables.set('admin_token', jsonData.body.token);",
+                                            "}"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/auth/login",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "auth",
+                                        "login"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "2. View data sources",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/admin/datasources",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "admin",
+                                        "datasources"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "3. Trigger sync",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"sourceName\": \"OpenAlex\",\n    \"query\": \"machine learning\",\n    \"maxPages\": 2\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/admin/sync/trigger",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "admin",
+                                        "sync",
+                                        "trigger"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "4. Check sync status",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/admin/sync/status",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "admin",
+                                        "sync",
+                                        "status"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "5. Verify new papers in search",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/api/papers/search?keyword=machine learning&page=0&size=10&sortBy=createdAt&sortDir=desc",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "papers",
+                                        "search"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "keyword",
+                                            "value": "machine learning"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "0"
+                                        },
+                                        {
+                                            "key": "size",
+                                            "value": "10"
+                                        },
+                                        {
+                                            "key": "sortBy",
+                                            "value": "createdAt"
+                                        },
+                                        {
+                                            "key": "sortDir",
+                                            "value": "desc"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Flow 5: Follow → Notification",
+                    "description": "1. Follow journal\n2. Trigger sync\n3. Check notifications\n4. Mark read\n5. Unfollow",
+                    "item": [
+                        {
+                            "name": "1. Follow journal #1",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{auth_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \"followType\": \"JOURNAL\", \"targetId\": 1 }"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/follows",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "follows"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "2. Check unread count",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{auth_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/notifications/unread-count",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "notifications",
+                                        "unread-count"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "3. Get notifications",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{auth_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/notifications?page=0&size=10",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "notifications"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "page",
+                                            "value": "0"
+                                        },
+                                        {
+                                            "key": "size",
+                                            "value": "10"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "4. Mark all as read",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{auth_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/notifications/read-all",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "notifications",
+                                        "read-all"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "name": "5. Verify my follows",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{auth_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/follows/me",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "follows",
+                                        "me"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

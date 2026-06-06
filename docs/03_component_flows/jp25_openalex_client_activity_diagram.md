@@ -9,6 +9,7 @@
 `OpenAlexClient` nằm ở **rìa ngoài cùng** (boundary) của hệ thống, đóng vai trò như một **"người phiên dịch"** — nhận dữ liệu JSON thô từ OpenAlex API, chuyển đổi thành `RawPaperData` mà phần còn lại của hệ thống có thể hiểu được.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 graph LR
     subgraph External ["☁️ Thế giới bên ngoài"]
         OA_API["OpenAlex API\n(api.openalex.org)"]
@@ -67,6 +68,7 @@ graph LR
 ## 2. Luồng End-to-End: Từ OpenAlex API đến Dashboard
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 sequenceDiagram
     autonumber
     participant OA as ☁️ OpenAlex API
@@ -121,6 +123,7 @@ sequenceDiagram
 ### 3.1. Interface và Implementation
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 classDiagram
     class ExternalApiClient {
         <<interface>>
@@ -172,6 +175,7 @@ classDiagram
 > **Tác dụng**: Gọi OpenAlex API để tìm bài báo theo từ khóa trong lĩnh vực Computer Science. Có cơ chế **phân trang tự động** nếu một trang không đủ dữ liệu.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     A["🟢 Bắt đầu: fetchPapers(query, page, size)"] --> B["normalizeSize(size) → requestedSize\nnormalizePage(page) → startPage\nTạo List rỗng: papers"]
     B --> C{"Vòng lặp phân trang\npapers.size() ﹤ requestedSize\nVÀ currentPage ﹤ startPage + 5?"}
@@ -202,6 +206,7 @@ flowchart TD
 > **Tác dụng**: Giống `fetchPapers`, nhưng thay vì tìm theo từ khóa, nó lọc theo **ngày xuất bản** (`from_publication_date`). Dùng cho việc sync bài báo mới hàng ngày/tuần.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     A["🟢 Bắt đầu: fetchRecentPapers(fromDate, page, size)"] --> B["Tạo filter string:\nfrom_publication_date:{fromDate},concepts.id:C41008148"]
     B --> C["Gọi lặp executeWorksRequest()\nvới URL:\nGET /works?filter={filter}&per_page={size}&page={page}"]
@@ -229,6 +234,7 @@ flowchart TD
 > **Tác dụng**: Kiểm tra xem OpenAlex API có đang hoạt động không. Được gọi bởi `DataSyncServiceImpl.syncAllSources()` trước khi bắt đầu sync từ một nguồn.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     A["🟢 Bắt đầu: isAvailable()"] --> B["Gọi: GET /works?per_page=1\ntimeout: 10 giây\nretry: 1 lần nếu 429"]
     B --> C{"API phản hồi\nthành công?"}
@@ -264,6 +270,7 @@ for (ExternalApiClient client : clientList) {
 > **Tác dụng**: Đây là **method TRUNG TÂM** — tất cả `fetchPapers`, `fetchRecentPapers`, `isAvailable` đều gọi đến nó. Nó chịu trách nhiệm: gửi HTTP request, xử lý lỗi, parse JSON, chuyển đổi sang `RawPaperData`.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     A["🟢 Bắt đầu: executeWorksRequest(requestSpec, limit)"] --> B["Gửi HTTP GET request\ntimeout: 10 giây\nretry: 1 lần nếu gặp 429"]
 
@@ -307,6 +314,7 @@ flowchart TD
 > **Tác dụng**: OpenAlex lưu abstract dưới dạng "inverted index" (đảo ngược) chứ không phải plain text. Method này chuyển đổi ngược lại.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     A["🟢 Bắt đầu: convertAbstractInvertedIndex(invertedIndex)"] --> B{"invertedIndex\nlà null / empty?"}
     B -->|"Có"| C["return null"]
@@ -357,6 +365,7 @@ flowchart TD
 > **Tác dụng**: Đây là bộ lọc lỗi tự động, xử lý 3 loại lỗi khác nhau với 3 chiến lược khác nhau.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     A["📡 HTTP Request gửi đi"] --> B{"Kết quả?"}
 
@@ -472,6 +481,7 @@ flowchart TD
 ## 6. Tóm tắt: Vai trò của OpenAlexClient trong Pipeline
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 graph LR
     A["☁️ OpenAlex API"] -->|"JSON thô"| B["🔌 OpenAlexClient\n(Phiên dịch + Bảo vệ lỗi)"]
     B -->|"List﹤RawPaperData﹥"| C["⚙️ DataSyncService\n(Lưu vào DB)"]

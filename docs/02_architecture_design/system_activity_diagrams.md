@@ -7,6 +7,7 @@
 ## 1. 🏗️ Sơ đồ kiến trúc tổng quan hệ thống
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 graph TB
     subgraph "👤 Client Layer"
         BROWSER["🌐 Web Browser"]
@@ -80,6 +81,7 @@ graph TB
 ### 2.1 Đăng ký tài khoản (Register)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(["🟢 Bắt đầu"]) --> A["👤 User mở trang Đăng ký"]
     A --> B["Nhập thông tin:<br/>username, email, password,<br/>fullName, role"]
@@ -113,6 +115,7 @@ flowchart TD
 ### 2.2 Đăng nhập (Login)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(["🟢 Bắt đầu"]) --> A["👤 User mở trang Login"]
     A --> B["Nhập username + password"]
@@ -154,6 +157,7 @@ flowchart TD
 ### 2.3 Xác thực mỗi Request (JWT Filter)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(["🟢 Client gửi<br/>HTTP Request"]) --> A["SecurityFilterChain<br/>nhận request"]
     A --> B{"URL trong<br/>permitAll()?<br/>/api/auth/**<br/>/swagger-ui/**<br/>/api/papers/search"}
@@ -198,6 +202,7 @@ flowchart TD
 ### 3.1 Tìm kiếm bài báo (Search Papers)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(["🟢 Bắt đầu"]) --> A["👤 User mở trang<br/>Search Papers"]
     A --> B["Nhập từ khóa tìm kiếm<br/>+ chọn filter:<br/>keyword / author / journal"]
@@ -232,6 +237,7 @@ flowchart TD
 ### 3.2 Quản lý Bookmark & Follow
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(["🟢 Bắt đầu"]) --> A{"User chọn<br/>hành động?"}
 
@@ -269,6 +275,7 @@ flowchart TD
 ## 4. 🔄 Sơ đồ hoạt động — Luồng Đồng bộ dữ liệu (Data Sync)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(["🟢 Trigger"]) --> A{"Trigger<br/>từ đâu?"}
 
@@ -319,6 +326,7 @@ flowchart TD
 ## 5. 📈 Sơ đồ hoạt động — Luồng Phân tích xu hướng (Trend Analysis)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(["🟢 Bắt đầu"]) --> A["👤 User mở<br/>Trend Analysis Page"]
     A --> B["Nhập keyword(s)<br/>+ chọn khoảng năm"]
@@ -368,6 +376,7 @@ flowchart TD
 ## 6. 🖥️ Sơ đồ hoạt động — Dashboard tổng quan
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(["🟢 User vào Dashboard"]) --> A["Frontend gọi<br/>nhiều API đồng thời"]
     
@@ -407,6 +416,7 @@ flowchart TD
 ## 7. ⚙️ Sơ đồ hoạt động — Quản trị hệ thống (Admin)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     START(["🟢 Admin đăng nhập"]) --> A{"Chức năng<br/>quản trị?"}
 
@@ -454,6 +464,7 @@ flowchart TD
 > Sơ đồ này mô tả toàn bộ hành trình dữ liệu từ khi thu thập đến khi hiển thị cho user.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart LR
     subgraph "1️⃣ Thu thập"
         EXT["🌐 External APIs<br/>OpenAlex / Crossref /<br/>Semantic Scholar"]
@@ -507,6 +518,7 @@ flowchart LR
 ## 9. 🗃️ Sơ đồ quan hệ giữa các Entity (ERD tóm tắt)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 erDiagram
     users ||--o{ bookmarks : "saves"
     users ||--o{ notifications : "receives"
@@ -528,6 +540,7 @@ erDiagram
 > User đăng nhập → tìm bài báo → bookmark → xem trend
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 sequenceDiagram
     actor User
     participant FE as React Frontend

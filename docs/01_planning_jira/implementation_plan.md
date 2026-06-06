@@ -12,6 +12,7 @@
 ## 1. 🏗️ Kiến trúc hệ thống tổng quan
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 graph TB
     subgraph "Frontend - React.js"
         UI["React SPA"]
@@ -83,6 +84,7 @@ graph TB
 ### 3.1 Luồng chính (Main Application Flow)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     A["👤 User truy cập hệ thống"] --> B{"Đã đăng nhập?"}
     B -- Chưa --> C["Đăng ký / Đăng nhập"]
@@ -120,6 +122,7 @@ flowchart TD
 ### 3.2 Luồng đồng bộ dữ liệu (Data Sync Flow)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart LR
     SCHED["⏰ Scheduler\n(Daily/Weekly)"] --> SYNC["Sync Service"]
     ADMIN["👨‍💼 Admin\nManual Trigger"] --> SYNC
@@ -141,6 +144,7 @@ flowchart LR
 ### 3.3 Luồng phân tích xu hướng (Trend Analysis Flow)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     DATA["📦 Research Papers\nin Database"] --> AGG["Aggregate theo\nkeyword + year"]
     AGG --> CALC["Tính toán metrics"]
@@ -165,6 +169,7 @@ flowchart TD
 ## 4. 📐 Entity Relationship Diagram (ERD)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 erDiagram
     USER {
         bigint id PK
@@ -393,6 +398,7 @@ journal-trend-tracker/
 ### Vai trò tổng quan
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 graph TB
     LEAD["👑 Thành viên 1 (Leader - Bạn)\nArchitect & Core Logic"]
     
@@ -603,6 +609,7 @@ graph TB
 ### Epic Structure
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 graph LR
     E1["🏛️ EPIC-1\nProject Setup\n& Foundation"]
     E2["🏛️ EPIC-2\nAuth & User\nManagement"]
@@ -747,6 +754,7 @@ graph LR
 ## 8. 📅 Timeline — Sprint Plan (7 tuần)
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 gantt
     title Scientific Journal Trend Tracker - Sprint Plan
     dateFormat  YYYY-MM-DD
@@ -942,6 +950,7 @@ gantt
 ## 9. 🔀 Git Branching Strategy
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 gitGraph
     commit id: "init"
     branch develop

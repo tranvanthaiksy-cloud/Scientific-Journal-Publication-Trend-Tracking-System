@@ -9,6 +9,7 @@
 `TrendAnalysisServiceImpl` là **bộ não phân tích xu hướng** của toàn bộ hệ thống. Nó nằm ở tầng Service (Business Logic Layer), kết nối giữa tầng Controller (nhận request từ người dùng) và tầng Repository (truy vấn database).
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 graph TD
     subgraph Frontend ["🖥️ Frontend (React)"]
         FE_Chart["Biểu đồ Line/Bar Chart"]
@@ -64,6 +65,7 @@ graph TD
 ## 2. Luồng End-to-End: Từ Thu thập Dữ liệu đến Hiển thị Biểu đồ
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 sequenceDiagram
     autonumber
     participant API as API Bên ngoài<br>(OpenAlex, Crossref)
@@ -105,6 +107,7 @@ sequenceDiagram
 > **Tác dụng**: Trả về số lượng bài báo của một từ khóa cụ thể qua từng năm trong khoảng thời gian chỉ định. Dùng để vẽ **biểu đồ đường (Line Chart)** trên Dashboard.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     A["🟢 Bắt đầu: getTrendByKeyword(keyword, yearFrom, yearTo)"] --> B["Gọi paperRepository.getTrendByKeyword()"]
     B --> C["JPQL Query chạy trên Database:<br>SELECT year, COUNT(p) FROM ResearchPaper p<br>JOIN p.keywords k<br>WHERE k.name = keyword<br>AND year BETWEEN yearFrom AND yearTo<br>GROUP BY year ORDER BY year"]
@@ -131,6 +134,7 @@ flowchart TD
 > **Tác dụng**: So sánh xu hướng của nhiều từ khóa cùng lúc. Dùng để vẽ **biểu đồ đường nhiều series (Multi-series Line Chart)**, mỗi từ khóa là một đường riêng.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     A["🟢 Bắt đầu: compareTrends(keywords, yearFrom, yearTo)"] --> B["Tạo List rỗng trendComparisons"]
     B --> C{"Duyệt từng keyword<br>trong danh sách keywords"}
@@ -162,6 +166,7 @@ flowchart TD
 > **Tác dụng**: Trả về danh sách N từ khóa có tốc độ tăng trưởng cao nhất. Dùng để hiển thị **bảng xếp hạng Trending Keywords** hoặc **biểu đồ cột (Bar Chart)** trên Dashboard.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     A["🟢 Bắt đầu: getTopTrendingTopics(limit)"] --> B["Gọi publicationTrendRepository.findMaxYear()"]
     B --> C{"maxYear có tồn tại?<br>(Bảng publication_trends có dữ liệu không?)"}
@@ -185,6 +190,7 @@ flowchart TD
 > **Tác dụng**: Tính toán lại TOÀN BỘ dữ liệu xu hướng và lưu vào bảng cache `publication_trends`. Đây là phương thức **"máy bơm dữ liệu"** — không có nó, 3 phương thức đọc ở trên sẽ không có dữ liệu để trả về.
 
 ```mermaid
+%%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
 flowchart TD
     A["🟢 Bắt đầu: recalculateTrends()"] --> B["<b>Bước 1:</b> Xóa toàn bộ dữ liệu cũ<br>publicationTrendRepository.deleteAllInBatch()"]
 
