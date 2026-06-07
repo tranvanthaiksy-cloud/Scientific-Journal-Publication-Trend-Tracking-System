@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import art1 from "../assets/journal_art_1.png";
+import art2 from "../assets/journal_art_2.png";
+import art3 from "../assets/journal_art_3.png";
+import art4 from "../assets/journal_art_4.png";
 import { Form, Input, Button, Typography, message } from "antd";
 import {
     UserOutlined,
@@ -15,10 +19,10 @@ function Login() {
 
 
     const images = [
-        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200",
-        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200",
-        "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200",
-        "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200",
+        art1,
+        art2,
+        art3,
+        art4,
     ];
 
     const [currentImage, setCurrentImage] = useState(0);
@@ -159,7 +163,7 @@ function Login() {
                         </Form>
 
                         <div className="signup-link">
-                            Don't have an account?
+                            Don't have an account?{" "}
                             <Link to="/register">
                                 Sign up
                             </Link>
