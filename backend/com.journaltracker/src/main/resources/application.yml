@@ -35,3 +35,7 @@ external-api:
     base-url: https://api.openalex.org
     email: your_team_email@gmail.com
     per-page: 25
+  crossref:
+    base-url: https://api.crossref.org
+    user-agent: JournalTracker/1.0 (mailto:your@email.com)
+    rows: 25
