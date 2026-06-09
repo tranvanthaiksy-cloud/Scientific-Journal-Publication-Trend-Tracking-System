@@ -12,6 +12,7 @@ import com.journaltracker.repository.JournalRepository;
 import com.journaltracker.repository.KeywordRepository;
 import com.journaltracker.repository.PaperRepository;
 import com.journaltracker.service.DataSyncService;
+import com.journaltracker.service.DeduplicationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,12 +31,12 @@ public class DataSyncServiceImpl implements DataSyncService {
     private final JournalRepository journalRepository;
     private final AuthorRepository authorRepository;
     private final KeywordRepository keywordRepository;
+    private final DeduplicationService deduplicationService;
 
     public void processSinglePapper(RawPaperData paperData, SyncResult result, String sourceName) {
         try {
-            if (isDuplicate(paperData)) {
-                log.debug("[Dedup] Bỏ qua bài báo trùng: doi='{}', title='{}'",
-                        paperData.getDoi(), paperData.getTitle());
+            boolean isDuplicate = deduplicationService.deduplicateAndMerge(paperData, sourceName);
+            if (isDuplicate) {
                 result.setDuplicates(result.getDuplicates() + 1);
                 return;
             }
