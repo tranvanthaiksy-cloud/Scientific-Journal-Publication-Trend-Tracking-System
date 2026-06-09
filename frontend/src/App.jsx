@@ -2,33 +2,19 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+
+
+import Dashboard from "./pages/Dashboard";
+import TrendAnalysis from "./pages/TrendAnalysis";
+import TopicExplorer from "./pages/TopicExplorer";
+import Following from "./pages/Following";
+import Reports from "./pages/Reports";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
 import "./App.css";
 
-// ─── Dashboard tạm (placeholder) ────────────────────────────────────────────
-function Dashboard() {
-    const { user, logout } = useAuth();
 
-    const handleLogout = () => {
-        logout();
-        // Navigate sẽ xảy ra tự động vì isAuthenticated = false sau khi logout
-    };
-
-    return (
-        <div className="dashboard">
-            <h1>Dashboard</h1>
-            {user && (
-                <p>
-                    Xin chào, <strong>{user.username}</strong> ({user.role})
-                </p>
-            )}
-            <button className="logout-btn" onClick={handleLogout}>
-                Logout
-            </button>
-        </div>
-    );
-}
 
 // ─── Root redirect ────────────────────────────────────────────────────────────
 function RootRedirect() {
@@ -53,7 +39,9 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
-                {/* Route được bảo vệ – phải đăng nhập mới vào được */}
+                {/* --- KHU VỰC ĐƯỢC BẢO VỆ CỦA ÔNG --- */}
+                {/* Phải đăng nhập thành công mới được vào xem mấy trang này */}
+
                 <Route
                     path="/dashboard"
                     element={
@@ -63,15 +51,42 @@ function App() {
                     }
                 />
 
-                {/* Ví dụ route chỉ dành cho ADMIN */}
-                {/* <Route
-                    path="/admin"
+                <Route
+                    path="/trends"
                     element={
-                        <ProtectedRoute role="ADMIN">
-                            <AdminPage />
+                        <ProtectedRoute>
+                            <TrendAnalysis />
                         </ProtectedRoute>
                     }
-                /> */}
+                />
+
+                <Route
+                    path="/topics"
+                    element={
+                        <ProtectedRoute>
+                            <TopicExplorer />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/following"
+                    element={
+                        <ProtectedRoute>
+                            <Following />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/reports"
+                    element={
+                        <ProtectedRoute>
+                            <Reports />
+                        </ProtectedRoute>
+                    }
+                />
+
             </Routes>
         </BrowserRouter>
     );

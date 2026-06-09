@@ -1,4 +1,4 @@
-import axiosInstance from "./axiosConfig";
+import axiosInstance from './axiosConfig';
 
 export const loginApi = (data) =>
     axiosInstance.post("/auth/login", data);
