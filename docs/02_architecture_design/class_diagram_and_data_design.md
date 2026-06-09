@@ -1,11 +1,11 @@
-# 📐 Class Diagram & Data Design — Scientific Journal Trend Tracker
+#  Class Diagram & Data Design — Scientific Journal Trend Tracker
 
 > Tài liệu này được tạo dựa trên phân tích toàn bộ source code hiện tại của hệ thống.
 > Mỗi class, attribute, method đều phản ánh chính xác code đang có trong project.
 
 ---
 
-## 1. 🏛️ Class Diagram Tổng Quan — Kiến Trúc Phân Tầng (Layered Architecture)
+## 1. Class Diagram Tổng Quan — Kiến Trúc Phân Tầng (Layered Architecture)
 
 ```mermaid
 %%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
@@ -134,7 +134,7 @@ classDiagram
 
 ---
 
-## 2. 📦 Class Diagram — Entity Layer (Domain Model)
+## 2. Class Diagram — Entity Layer (Domain Model)
 
 ```mermaid
 %%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
@@ -233,7 +233,7 @@ classDiagram
 
 ---
 
-## 3. 🔐 Class Diagram — Security Layer
+## 3. Class Diagram — Security Layer
 
 ```mermaid
 %%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
@@ -286,7 +286,7 @@ classDiagram
 
 ---
 
-## 4. 🌐 Class Diagram — External API Client Layer
+## 4. Class Diagram — External API Client Layer
 
 ```mermaid
 %%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
@@ -349,7 +349,7 @@ classDiagram
 
 ---
 
-## 5. 📨 Class Diagram — DTO Layer
+## 5.  Class Diagram — DTO Layer
 
 ```mermaid
 %%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
@@ -466,7 +466,7 @@ classDiagram
 
 ---
 
-## 6. 🗺️ Class Diagram — Mapper & Exception Layer
+## 6. Class Diagram — Mapper & Exception Layer
 
 ```mermaid
 %%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
@@ -530,7 +530,7 @@ classDiagram
 
 ---
 
-## 7. ⚙️ Class Diagram — Configuration Layer
+## 7. Class Diagram — Configuration Layer
 
 ```mermaid
 %%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
@@ -566,7 +566,7 @@ classDiagram
 
 ---
 
-## 8. 📊 Class Diagram Tổng Hợp — Quan Hệ Giữa Các Tầng
+## 8. Class Diagram Tổng Hợp — Quan Hệ Giữa Các Tầng
 
 ```mermaid
 %%{init: { 'sequence': {'useMaxWidth': false}, 'flowchart': {'useMaxWidth': false} }}%%
@@ -679,7 +679,7 @@ classDiagram
 
 ---
 
-## 9. 💾 Data Design — Thiết Kế Cơ Sở Dữ Liệu
+## 9. Data Design — Thiết Kế Cơ Sở Dữ Liệu
 
 ### 9.1 ERD (Entity Relationship Diagram)
 
@@ -775,7 +775,7 @@ erDiagram
 
 ### 9.2 Mô Tả Chi Tiết Các Bảng
 
-#### 📋 Bảng `users` — Quản lý người dùng
+####  Bảng `users` — Quản lý người dùng
 
 | Cột           | Kiểu dữ liệu | Ràng buộc           | Mô tả                                     |
 |---------------|---------------|---------------------|--------------------------------------------|
@@ -789,7 +789,7 @@ erDiagram
 | `created_at`  | DATETIME      | AUTO @PrePersist    | Thời điểm tạo                              |
 | `updated_at`  | DATETIME      | AUTO @PreUpdate     | Thời điểm cập nhật                         |
 
-#### 📋 Bảng `research_papers` — Bài báo khoa học
+#### Bảng `research_papers` — Bài báo khoa học
 
 | Cột               | Kiểu dữ liệu  | Ràng buộc          | Mô tả                          |
 |--------------------|----------------|--------------------|---------------------------------|
@@ -804,7 +804,7 @@ erDiagram
 | `fetched_at`       | DATETIME       | AUTO               | Thời điểm lấy dữ liệu          |
 | `created_at`       | DATETIME       | NOT NULL, AUTO     | Thời điểm tạo record           |
 
-#### 📋 Bảng `journals` — Tạp chí khoa học
+#### Bảng `journals` — Tạp chí khoa học
 
 | Cột           | Kiểu dữ liệu | Ràng buộc          | Mô tả              |
 |---------------|---------------|--------------------|--------------------|
@@ -815,7 +815,7 @@ erDiagram
 | `field`       | VARCHAR(100)  | NULLABLE           | Lĩnh vực            |
 | `paper_count` | INT           | NULLABLE           | Tổng số bài báo     |
 
-#### 📋 Bảng `authors` — Tác giả
+#### Bảng `authors` — Tác giả
 
 | Cột           | Kiểu dữ liệu | Ràng buộc          | Mô tả                   |
 |---------------|---------------|--------------------|--------------------------| 
@@ -824,7 +824,7 @@ erDiagram
 | `external_id` | VARCHAR(100)  | NULLABLE           | ID từ nguồn bên ngoài     |
 | `affiliation` | VARCHAR(255)  | NULLABLE           | Tổ chức / trường đại học  |
 
-#### 📋 Bảng `keywords` — Từ khóa
+#### Bảng `keywords` — Từ khóa
 
 | Cột           | Kiểu dữ liệu | Ràng buộc          | Mô tả                |
 |---------------|---------------|--------------------|-----------------------|
@@ -832,7 +832,7 @@ erDiagram
 | `name`        | VARCHAR(255)  | UNIQUE, NOT NULL   | Tên từ khóa            |
 | `usage_count` | INT           | NULLABLE           | Số lần xuất hiện       |
 
-#### 📋 Bảng `publication_trends` — Xu hướng xuất bản
+#### Bảng `publication_trends` — Xu hướng xuất bản
 
 | Cột           | Kiểu dữ liệu | Ràng buộc            | Mô tả                      |
 |---------------|---------------|----------------------|-----------------------------|
@@ -842,7 +842,7 @@ erDiagram
 | `paper_count` | INT           | NOT NULL             | Số bài báo trong năm         |
 | `growth_rate` | DECIMAL(5,2)  | NULLABLE             | Tỷ lệ tăng trưởng (%)       |
 
-#### 📋 Bảng `research_topics` — Chủ đề nghiên cứu
+#### Bảng `research_topics` — Chủ đề nghiên cứu
 
 | Cột           | Kiểu dữ liệu | Ràng buộc          | Mô tả                 |
 |---------------|---------------|--------------------|-----------------------|
@@ -851,14 +851,14 @@ erDiagram
 | `description` | TEXT          | NULLABLE           | Mô tả chủ đề           |
 | `is_trending` | BOOLEAN       | NOT NULL           | Đang là xu hướng?       |
 
-#### 📋 Bảng nối `paper_authors` — N-N giữa Paper và Author
+#### Bảng nối `paper_authors` — N-N giữa Paper và Author
 
 | Cột         | Kiểu dữ liệu | Ràng buộc                   | Mô tả       |
 |-------------|---------------|-----------------------------|--------------|
 | `paper_id`  | BIGINT        | PK, FK → research_papers.id | Bài báo      |
 | `author_id` | BIGINT        | PK, FK → authors.id         | Tác giả      |
 
-#### 📋 Bảng nối `paper_keywords` — N-N giữa Paper và Keyword
+#### Bảng nối `paper_keywords` — N-N giữa Paper và Keyword
 
 | Cột          | Kiểu dữ liệu | Ràng buộc                   | Mô tả       |
 |--------------|---------------|-----------------------------|--------------|
