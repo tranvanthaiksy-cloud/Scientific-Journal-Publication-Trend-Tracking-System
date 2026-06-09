@@ -1,8 +1,4 @@
 import { useState, useEffect } from "react";
-import art1 from "../assets/journal_art_1.png";
-import art2 from "../assets/journal_art_2.png";
-import art3 from "../assets/journal_art_3.png";
-import art4 from "../assets/journal_art_4.png";
 import { Form, Input, Button, Typography, message } from "antd";
 import {
     UserOutlined,
@@ -12,36 +8,26 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { loginApi } from "../api/authApi";
 
+import art1 from "../assets/journal_art_1.png";
+import art2 from "../assets/journal_art_2.png";
+import art3 from "../assets/journal_art_3.png";
+import art4 from "../assets/journal_art_4.png";
+
 const { Title, Text } = Typography;
 
 function Login() {
     const navigate = useNavigate();
 
-
-    const images = [
-        art1,
-        art2,
-        art3,
-        art4,
-    ];
+    const images = [art1, art2, art3, art4];
 
     const [currentImage, setCurrentImage] = useState(0);
-    const [fade, setFade] = useState(true);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setFade(false);
-
-            setTimeout(() => {
-                setCurrentImage((prev) =>
-                    prev === images.length - 1
-                        ? 0
-                        : prev + 1
-                );
-
-                setFade(true);
-            }, 500);
-        }, 3000);
+            setCurrentImage((prev) =>
+                prev === images.length - 1 ? 0 : prev + 1
+            );
+        }, 5000);
 
         return () => clearInterval(interval);
     }, []);
@@ -62,13 +48,15 @@ function Login() {
                 })
             );
 
-            message.success("Đăng nhập thành công");
+            message.success("Login Successful!");
 
             navigate("/dashboard");
         } catch (error) {
+            console.error(error);
+
             message.error(
                 error?.response?.data?.message ||
-                "Sai tên đăng nhập hoặc mật khẩu"
+                "Wrong username or password!"
             );
         }
     };
@@ -117,7 +105,7 @@ function Login() {
                                     {
                                         required: true,
                                         message:
-                                            "Vui lòng nhập tên đăng nhập",
+                                            "Please enter your username!",
                                     },
                                 ]}
                             >
@@ -135,7 +123,7 @@ function Login() {
                                     {
                                         required: true,
                                         message:
-                                            "Vui lòng nhập mật khẩu",
+                                            "Please enter your password!",
                                     },
                                 ]}
                             >
@@ -147,9 +135,7 @@ function Login() {
                             </Form.Item>
 
                             <div className="forgot-row">
-                                <a href="#">
-                                    Forgot Password?
-                                </a>
+                                <a href="#">Forgot Password?</a>
                             </div>
 
                             <Button
@@ -189,7 +175,7 @@ function Login() {
                             <img
                                 key={index}
                                 src={image}
-                                alt=""
+                                alt={`slide-${index}`}
                                 className={
                                     index === currentImage
                                         ? "slider-image active"
