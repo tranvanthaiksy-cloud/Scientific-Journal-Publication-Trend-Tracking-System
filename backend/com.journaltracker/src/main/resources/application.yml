@@ -41,3 +41,9 @@ external-api:
     base-url: https://api.crossref.org
     user-agent: JournalTracker/1.0 (mailto:${OPENALEX_EMAIL:tranvanthai20062@gmail.com})
     rows: 25
+
+sync:
+  cron: ${SYNC_CRON:0 0 13 * * ?}
+  enabled: ${SYNC_ENABLED:true}
+  default-query: ${SYNC_DEFAULT_QUERY:machine learning}
+  max-pages-per-sync: ${SYNC_MAX_PAGES:10}
