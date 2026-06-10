@@ -28,6 +28,8 @@ public class SecurityConfig {
             HttpSecurity http
     ) throws Exception {
 
+        http.cors(org.springframework.security.config.Customizer.withDefaults());
+
         http.authorizeHttpRequests(auth ->
                 auth.requestMatchers(
                                 "/api/auth/**",
