@@ -6,9 +6,12 @@ import com.journaltracker.dto.request.RefreshTokenRequest;
 import com.journaltracker.dto.request.RegisterRequest;
 import com.journaltracker.dto.response.ApiResponse;
 import com.journaltracker.dto.response.AuthResponse;
+import com.journaltracker.external.CrossrefClient;
 import com.journaltracker.external.OpenAlexClient;
+import com.journaltracker.scheduler.DataSyncScheduler;
 import com.journaltracker.service.AuthService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,14 +24,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
+@AllArgsConstructor
 public class AuthController {
     private final OpenAlexClient alexClient;
     private final AuthService authService;
-
-    public AuthController(OpenAlexClient alexClient, AuthService authService) {
-        this.alexClient = alexClient;
-        this.authService = authService;
-    }
+    private final DataSyncScheduler dataSyncScheduler;
+    private final CrossrefClient CrossrefClient;
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
@@ -52,6 +53,7 @@ public class AuthController {
 
     @GetMapping("/test")
     public List<RawPaperData> test() {
-       return alexClient.fetchPapers("machine learning", 1, 10);
+//       dataSyncScheduler.syncData();
+       return CrossrefClient.fetchPapers("artificial intelligence", 1, 10);
     }
 }
