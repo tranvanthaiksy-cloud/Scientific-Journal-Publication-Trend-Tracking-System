@@ -23,6 +23,9 @@ public interface PaperRepository extends JpaRepository<ResearchPaper, Long>,
     @Query("SELECT p FROM ResearchPaper p WHERE p.id = :id")
     Optional<ResearchPaper> findDetailById(@Param("id") Long id);
 
+    @EntityGraph(attributePaths = {"journal", "authors", "keywords"})
+    Page<ResearchPaper> findByJournalId(Long journalId, Pageable pageable);
+
     boolean existsByDoi(String doi);
 
     boolean existsByTitle(String title);
