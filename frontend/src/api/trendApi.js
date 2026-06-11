@@ -21,3 +21,11 @@ export const getTopKeywords = (limit = 20) =>
 // GET /api/trends/analyze?keyword=...&yearFrom=...&yearTo=...
 export const analyzeTrends = (params) =>
     axiosInstance.get('/trends/analyze', { params });
+
+// ── Namespace object export (for pages using trendApi.method()) ───────────────
+export const trendApi = {
+    getKeywordTrend,
+    getCompareTrends,
+    getTopKeywords,
+    analyzeTrends,
+};

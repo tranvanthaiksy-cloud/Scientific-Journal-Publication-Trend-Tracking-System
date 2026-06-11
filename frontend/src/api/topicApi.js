@@ -14,3 +14,11 @@ export const getPapersByKeyword = (name, params) =>
 // GET /api/journals?field=...&page=0&size=10
 export const getJournalsByField = (field, params) =>
     axiosInstance.get('/journals', { params: { field, ...params } });
+
+// ── Namespace object export (for pages using topicApi.method()) ───────────────
+export const topicApi = {
+    getTopics: getTopKeywords,         // alias: TopicExplorer.jsx calls topicApi.getTopics()
+    getTopKeywords,
+    getPapersByKeyword,
+    getJournalsByField,
+};

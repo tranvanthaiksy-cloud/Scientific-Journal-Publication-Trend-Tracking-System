@@ -14,3 +14,11 @@ export const generateReport = (data) =>
 // GET /api/reports/{id}
 export const getReportDetail = (id) =>
     axiosInstance.get(`/reports/${id}`);
+
+// ── Namespace object export (for pages using reportApi.method()) ──────────────
+export const reportApi = {
+    getHistory: getReportHistory,      // alias: Reports.jsx calls reportApi.getHistory()
+    getReportHistory,
+    generateReport,
+    getReportDetail,
+};

@@ -31,3 +31,14 @@ export const getRecentPapers = (page = 0, size = 10) =>
 // GET /api/keywords/top?limit=10
 export const getTopKeywords = (limit = 10) =>
     axiosInstance.get(`/keywords/top?limit=${limit}`);
+
+// ── Namespace object export (for pages using dashboardApi.method()) ────────────
+export const dashboardApi = {
+    getStats: getDashboardStats,       // alias: Dashboard.jsx calls dashboardApi.getStats()
+    getDashboardStats,
+    getTopJournals,
+    getFieldDistribution,
+    getYearlyStats,
+    getRecentPapers,
+    getTopKeywords,
+};

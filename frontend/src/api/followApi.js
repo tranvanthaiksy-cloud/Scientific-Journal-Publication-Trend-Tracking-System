@@ -19,3 +19,12 @@ export const followKeyword = (keywordId) =>
 // DELETE /api/follows/{id}
 export const unfollow = (followId) =>
     axiosInstance.delete(`/follows/${followId}`);
+
+// ── Namespace object export (for pages using followApi.method()) ──────────────
+export const followApi = {
+    getFollows: getMyFollows,          // alias: Following.jsx calls followApi.getFollows()
+    getMyFollows,
+    followJournal,
+    followKeyword,
+    unfollow,
+};
