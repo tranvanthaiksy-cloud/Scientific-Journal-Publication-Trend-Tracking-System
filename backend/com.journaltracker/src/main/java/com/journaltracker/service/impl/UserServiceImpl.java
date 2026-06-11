@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Bạn không thể tự vô hiệu hóa tài khoản Admin của chính mình!");
         }
 
-        user.setActive(isActive); // Note: Đảm bảo field trong Entity User của ông là active (hoặc chỉnh lại theo thực tế)
+        user.setIsActive(isActive); // Note: Đảm bảo field trong Entity User của ông là active (hoặc chỉnh lại theo thực tế)
         userRepository.save(user);
     }
 
@@ -121,8 +121,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("User không tồn tại với ID: " + id));
 
-        user.setRole(role);
-        userRepository.save(user);
+        user.setRole(com.journaltracker.entity.Role.valueOf(role.toUpperCase()));        userRepository.save(user);
     }
 
     // =========================================================================
