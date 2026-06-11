@@ -1,16 +1,33 @@
 import axiosInstance from './axiosConfig';
 
-const API_BASE_URL = "http://localhost:8080";
-export const dashboardApi = {
+// ── Dashboard Stats ──────────────────────────────────────────────────────────
+// GET /api/dashboard/stats → tổng số papers, journals, authors, keywords
+export const getDashboardStats = () =>
+    axiosInstance.get('/dashboard/stats');
 
-    getStats: () => axiosInstance.get(`${API_BASE_URL}`),
+// ── Top Journals ─────────────────────────────────────────────────────────────
+// GET /api/dashboard/top-journals → top journals theo số paper
+export const getTopJournals = () =>
+    axiosInstance.get('/dashboard/top-journals');
 
-    getTopJournals: () => axiosInstance.get(`${API_BASE_URL}/api/dashboard/top-journals`),
+// ── Field Distribution ────────────────────────────────────────────────────────
+// GET /api/dashboard/field-distribution → phân bố số paper theo lĩnh vực
+export const getFieldDistribution = () =>
+    axiosInstance.get('/dashboard/field-distribution');
 
+// ── Yearly Publication Stats ──────────────────────────────────────────────────
+// GET /api/dashboard/yearly-stats → số paper theo từng năm
+export const getYearlyStats = () =>
+    axiosInstance.get('/dashboard/yearly-stats');
 
-    getFieldDistribution: () => axiosInstance.get(`${API_BASE_URL}/api/dashboard/field-distribution`),
+// ── Recent Papers ─────────────────────────────────────────────────────────────
+// GET /api/papers/search?page=0&size=10&sortBy=publicationYear&sortDir=desc
+export const getRecentPapers = (page = 0, size = 10) =>
+    axiosInstance.get('/papers/search', {
+        params: { page, size, sortBy: 'publicationYear', sortDir: 'desc' },
+    });
 
-    getYearlyStats: () => axiosInstance.get(`${API_BASE_URL}/yearly-stats`),
-    getTrending: () => axiosInstance.get(`${API_BASE_URL}/trending`),
-    getRecentPapers: () => axiosInstance.get(`${API_BASE_URL}/recent-papers`),
-};
+// ── Top Keywords (trending) ───────────────────────────────────────────────────
+// GET /api/keywords/top?limit=10
+export const getTopKeywords = (limit = 10) =>
+    axiosInstance.get(`/keywords/top?limit=${limit}`);
