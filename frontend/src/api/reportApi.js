@@ -1,8 +1,16 @@
 import axiosInstance from './axiosConfig';
 
-const API_BASE_URL = "http://localhost:8080";
-export const reportApi = {
-    getHistory: () => axiosInstance.get(`${API_BASE_URL}/api/reports/history`),
-    generateReport: (data) => axiosInstance.post(`${API_BASE_URL}/api/reports/generate`, data),
-    getReportDetail: (id) => axiosInstance.get(`${API_BASE_URL}/api/reports/${id}`)
-};
+// ── Report History ────────────────────────────────────────────────────────────
+// GET /api/reports/history → danh sách báo cáo đã tạo (cần JWT)
+export const getReportHistory = () =>
+    axiosInstance.get('/reports/history');
+
+// ── Generate Report ───────────────────────────────────────────────────────────
+// POST /api/reports/generate  body: { title, keyword, yearFrom, yearTo, ... }
+export const generateReport = (data) =>
+    axiosInstance.post('/reports/generate', data);
+
+// ── Report Detail ─────────────────────────────────────────────────────────────
+// GET /api/reports/{id}
+export const getReportDetail = (id) =>
+    axiosInstance.get(`/reports/${id}`);

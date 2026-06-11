@@ -1,14 +1,23 @@
 import axiosInstance from './axiosConfig';
-const API_BASE_URL = "http://localhost:8080";
 
-export const trendApi = {
-    getKeywordTrend: (keyword) => axiosInstance.get(`${API_BASE_URL}/api/trends/keyword/${keyword}`),
-    getCompareTrends: (keywords) => {
-        const query = keywords.join(',');
-        return axiosInstance.get(`${API_BASE_URL}/api/trends/compare?keywords=${query}`);
-    },
+// ── Keyword Trend ─────────────────────────────────────────────────────────────
+// GET /api/trends/keyword/{keyword} → trend của 1 keyword theo từng năm
+export const getKeywordTrend = (keyword) =>
+    axiosInstance.get(`/trends/keyword/${encodeURIComponent(keyword)}`);
 
-    getTopKeywords: (limit = 20) => axiosInstance.get(`${API_BASE_URL}/api/keywords/top?limit=${limit}`),
-
-    analyzeTrends: (params) => axiosInstance.get(`${API_BASE_URL}/api/trends/analyze`, { params }),
+// ── Compare Trends ────────────────────────────────────────────────────────────
+// GET /api/trends/compare?keywords=ai,nlp → so sánh nhiều keywords
+export const getCompareTrends = (keywords = []) => {
+    const query = keywords.map(encodeURIComponent).join(',');
+    return axiosInstance.get(`/trends/compare?keywords=${query}`);
 };
+
+// ── Top Keywords ──────────────────────────────────────────────────────────────
+// GET /api/keywords/top?limit=20 → top keywords theo usage_count
+export const getTopKeywords = (limit = 20) =>
+    axiosInstance.get(`/keywords/top?limit=${limit}`);
+
+// ── Analyze Trends ────────────────────────────────────────────────────────────
+// GET /api/trends/analyze?keyword=...&yearFrom=...&yearTo=...
+export const analyzeTrends = (params) =>
+    axiosInstance.get('/trends/analyze', { params });
