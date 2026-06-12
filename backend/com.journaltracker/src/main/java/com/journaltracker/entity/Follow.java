@@ -1,15 +1,6 @@
 package com.journaltracker.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,13 +8,23 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "follows")
+@Table(
+        name = "follows",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_user_follow_target",
+                        columnNames = {
+                                "user_id",
+                                "follow_type",
+                                "target_id"
+                        }
+                )
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
 public class Follow {
-
-    public static final String JOURNAL_TYPE = "JOURNAL";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +34,9 @@ public class Follow {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "follow_type", nullable = false, length = 20)
-    private String followType;
+    private FollowType followType;
 
     @Column(name = "target_id", nullable = false)
     private Long targetId;

@@ -4,7 +4,7 @@ import { FileTextOutlined, BookOutlined, TeamOutlined, TagOutlined, ArrowUpOutli
 import { trendApi } from '../api/trendApi';
 import TrendLineChart from '../components/Charts/TrendLineChart';
 import { dashboardApi } from '../api/dashboardApi';
-
+import { useNavigate } from "react-router-dom";
 // === JP-37 THÊM MỚI: Import 2 Component biểu đồ mới ===
 import JournalBarChart from '../components/Charts/JournalBarChart';
 import FieldPieChart from '../components/Charts/FieldPieChart';
@@ -13,6 +13,7 @@ import FieldPieChart from '../components/Charts/FieldPieChart';
 const { Title, Text } = Typography;
 
 const Dashboard = () => {
+    const navigate = useNavigate();
     // 1. Dữ liệu cho JP-35 (Các ô số liệu)
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -75,7 +76,20 @@ const Dashboard = () => {
     return (
         <div style={{ padding: '24px', background: '#f5f5f5', minHeight: '100vh' }}>
             <Title level={2}>Research Dashboard</Title>
-
+            <Row gutter={[16, 16]} style={{ marginBottom: "24px" }}>
+                <Col xs={24} md={8}>
+                    <Card
+                        hoverable
+                        style={{ cursor: "pointer" }}
+                        onClick={() => navigate("/papers/search")}
+                    >
+                        <Title level={4}>🔍 Search Papers</Title>
+                        <Text>
+                            Tìm kiếm bài báo theo từ khóa, tác giả hoặc journal
+                        </Text>
+                    </Card>
+                </Col>
+            </Row>
             {/* Row 1: Stat Cards (JP-35) */}
             <Row gutter={[16, 16]}>
                 <Col xs={24} sm={12} lg={6}>

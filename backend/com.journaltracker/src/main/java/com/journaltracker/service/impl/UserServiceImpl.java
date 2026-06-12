@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
 
     // =========================================================================
 
-    private User getUserByUsername(String username) {
+    public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UnauthorizedException("Invalid username or password"));
     }
