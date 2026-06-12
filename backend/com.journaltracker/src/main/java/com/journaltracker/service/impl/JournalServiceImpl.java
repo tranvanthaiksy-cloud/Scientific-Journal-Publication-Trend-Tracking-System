@@ -4,6 +4,7 @@ import com.journaltracker.dto.response.JournalDetailResponse;
 import com.journaltracker.dto.response.JournalResponse;
 import com.journaltracker.dto.response.PaperSummaryResponse;
 import com.journaltracker.entity.Follow;
+import com.journaltracker.entity.FollowType;
 import com.journaltracker.entity.Journal;
 import com.journaltracker.exception.ResourceNotFoundException;
 import com.journaltracker.mapper.JournalMapper;
@@ -78,7 +79,7 @@ public class JournalServiceImpl implements JournalService {
         boolean isFollowed = currentUsername != null
                 && followRepository.existsByUserUsernameAndFollowTypeAndTargetId(
                         currentUsername,
-                        Follow.JOURNAL_TYPE,
+                String.valueOf(FollowType.JOURNAL),
                         id
                 );
 
