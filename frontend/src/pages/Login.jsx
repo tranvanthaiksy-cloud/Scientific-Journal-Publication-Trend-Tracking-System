@@ -52,7 +52,7 @@ function Login() {
             const authData = res.data.body;
 
             // Lưu token + thông tin user vào AuthContext & localStorage
-            login(authData.token, {
+            login(authData.accessToken, authData.refreshToken, {
                 username: authData.username,
                 role: authData.role,
             });

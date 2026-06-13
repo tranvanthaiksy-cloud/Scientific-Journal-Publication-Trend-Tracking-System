@@ -2,7 +2,8 @@ server:
   port: 8080
 jwt:
   secret: ${JWT_SECRET:mySuperSecretKeyForJwtAuthenticationSpringBootProject2026VerySecureSecretKey}
-  expiration: ${JWT_EXPIRATION:86400000}
+  access-expiration: ${JWT_ACCESS_EXPIRATION:86400000}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
 spring:
   config:
     import:

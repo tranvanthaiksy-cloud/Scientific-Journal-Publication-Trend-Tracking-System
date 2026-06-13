@@ -190,9 +190,9 @@ function SearchPapers() {
                             options={journals.map(
                                 (journal) => ({
                                     label:
-                                    journal.name,
+                                        journal.name,
                                     value:
-                                    journal.id,
+                                        journal.id,
                                 })
                             )}
                         />

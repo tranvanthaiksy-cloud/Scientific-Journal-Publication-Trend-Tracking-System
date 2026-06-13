@@ -10,19 +10,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String secret;
-    @Value("${jwt.expiration}")
+    @Value("${jwt.access-expiration}")
     private long jwtExpiration;
-    private static final long REFRESH_GRACE_PERIOD_MS = 60 * 60 * 1000;
+    @Value("${jwt.refresh-expiration}")
+    private long jwtRefreshExpiration;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(
@@ -30,7 +28,7 @@ public class JwtTokenProvider {
         );
     }
     public String generateToken(UserDetails userDetails) {
-        Map<String,Object> claims = getClaimsUser(userDetails);
+        Map<String, Object> claims = getClaimsUser(userDetails);
         Date now = new Date();
         Date expiryDate =
                 new Date(
@@ -38,6 +36,19 @@ public class JwtTokenProvider {
                 );
         return Jwts.builder()
                 .claims(claims)
+                .subject(userDetails.getUsername())
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(getSigningKey(), Jwts.SIG.HS512)
+                .compact();
+    }
+    public String generateRefreshToken(UserDetails userDetails){
+        Date now = new Date();
+        Date expiryDate =
+                new Date(
+                        now.getTime() + jwtRefreshExpiration
+                );
+        return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(now)
                 .expiration(expiryDate)
@@ -79,7 +90,7 @@ public class JwtTokenProvider {
             return Optional.ofNullable(claims.getSubject());
         } catch (ExpiredJwtException ex) {
             Date expiration = ex.getClaims().getExpiration();
-            if (expiration != null && isWithinRefreshGracePeriod(expiration)) {
+            if (expiration != null) {
                 return Optional.ofNullable(ex.getClaims().getSubject());
             }
             log.warn("JWT expired outside refresh grace period");
@@ -98,8 +109,4 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
-    private boolean isWithinRefreshGracePeriod(Date expiration) {
-        long expiredForMs = new Date().getTime() - expiration.getTime();
-        return expiredForMs <= REFRESH_GRACE_PERIOD_MS;
-    }
 }

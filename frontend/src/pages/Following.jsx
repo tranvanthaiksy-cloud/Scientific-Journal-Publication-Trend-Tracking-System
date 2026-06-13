@@ -17,7 +17,20 @@ const Following = () => {
         setLoading(true);
         try {
             const res = await followApi.getFollows();
-            setFollows(res.data);
+            const rawFollows = res.data?.body || [];
+            
+            // Ánh xạ dữ liệu từ backend sang cấu trúc frontend mong đợi
+            const mappedFollows = rawFollows.map(item => ({
+                id: item.id,
+                type: item.followType, // 'JOURNAL', 'KEYWORD', 'TOPIC'
+                name: item.targetName,
+                publisher: item.followType === 'JOURNAL' ? 'Academic Source' : undefined,
+                field: item.followType === 'JOURNAL' ? 'Scientific Field' : undefined,
+                paperCount: 0,
+                usageCount: 0
+            }));
+            
+            setFollows(mappedFollows);
         } catch (error) {
             message.error("Không thể tải danh sách theo dõi!");
         } finally {
@@ -65,8 +78,8 @@ const Following = () => {
                                 <Card.Meta
                                     title={item.name}
                                     description={<>
-                                        <Text type="secondary">Publisher: {item.publisher}</Text><br/>
-                                        <Text type="secondary">Field: {item.field}</Text><br/>
+                                        <Text type="secondary">Publisher: {item.publisher}</Text><br />
+                                        <Text type="secondary">Field: {item.field}</Text><br />
                                         <Text strong>{item.paperCount} papers</Text>
                                     </>}
                                 />
