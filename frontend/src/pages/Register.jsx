@@ -13,14 +13,16 @@ import {
     Row,
     Col,
 } from "antd";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { ReadOutlined } from "@ant-design/icons";
 import { registerApi } from "../api/authApi";
+import { useAuth } from "../hooks/useAuth";
 
 const { Title, Text } = Typography;
 
 function Register() {
     const navigate = useNavigate();
+    const { login, isAuthenticated, loading } = useAuth();
 
     const images = [
         art1,
@@ -41,9 +43,17 @@ function Register() {
         return () => clearInterval(interval);
     }, []);
 
+    // ── Guard 1: Chờ AuthContext đọc xong localStorage ────────────────────────
+    if (loading) return null;
+
+    // ── Guard 2: Đã đăng nhập → redirect dashboard ────────────────────────────
+    if (isAuthenticated) {
+        return <Navigate to="/dashboard" replace />;
+    }
+
     const onFinish = async (values) => {
         try {
-            await registerApi({
+            const res = await registerApi({
                 username: values.username,
                 email: values.email,
                 fullName: values.fullName,
@@ -51,8 +61,16 @@ function Register() {
                 role: values.role,
             });
 
-            message.success("Registration successful!");
-            navigate("/login");
+            const authData = res.data.body;
+
+            // Lưu token + thông tin user vào AuthContext & localStorage (vào thẳng luôn)
+            login(authData.accessToken, authData.refreshToken, {
+                username: authData.username,
+                role: authData.role,
+            });
+
+            message.success("Đăng ký và đăng nhập thành công!");
+            navigate("/dashboard");
         } catch (error) {
             message.error(
                 error?.response?.data?.message ||

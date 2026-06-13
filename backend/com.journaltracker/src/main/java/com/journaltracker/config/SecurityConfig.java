@@ -41,8 +41,7 @@ public class SecurityConfig {
                                 .anyRequest()
                                 .authenticated());
 
-                http.csrf(
-                                AbstractHttpConfigurer::disable);
+                http.csrf(AbstractHttpConfigurer::disable);
 
                 http.sessionManagement(session -> session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS));
