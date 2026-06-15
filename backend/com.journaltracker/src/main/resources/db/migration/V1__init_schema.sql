@@ -129,3 +129,16 @@ CREATE TABLE topic_keywords
     CONSTRAINT fk_topic_keywords FOREIGN KEY (topic_id) REFERENCES research_topics (id),
     CONSTRAINT fk_keywords_topic FOREIGN KEY (keyword_id) REFERENCES keywords (id)
 );
+CREATE TABLE refresh_tokens
+(
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(255) not null,
+    token VARCHAR(255) not null,
+    is_revoked tinyint(1) NOT NULL DEFAULT '0',
+    expiry_date datetime NOT NULL ,
+    grace_period_end datetime DEFAULT NULL,
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY token_UNIQUE (token),
+    CONSTRAINT fk_tokens_users FOREIGN KEY (username) REFERENCES users (username) ON DELETE CASCADE
+)

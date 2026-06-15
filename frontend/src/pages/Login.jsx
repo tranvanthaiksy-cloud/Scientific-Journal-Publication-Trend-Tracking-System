@@ -5,7 +5,7 @@ import {
     LockOutlined,
     ReadOutlined,
 } from "@ant-design/icons";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { loginApi } from "../api/authApi";
 import { useAuth } from "../hooks/useAuth";
 
@@ -18,18 +18,10 @@ const { Title, Text } = Typography;
 
 function Login() {
     const navigate = useNavigate();
-    const { login, isAuthenticated } = useAuth();
+    const { login, isAuthenticated, loading } = useAuth();
 
     const images = [art1, art2, art3, art4];
-
     const [currentImage, setCurrentImage] = useState(0);
-
-    // Tự động chuyển hướng sang dashboard nếu đã đăng nhập
-    useEffect(() => {
-        if (isAuthenticated) {
-            navigate("/dashboard");
-        }
-    }, [isAuthenticated, navigate]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -37,31 +29,41 @@ function Login() {
                 prev === images.length - 1 ? 0 : prev + 1
             );
         }, 5000);
-
         return () => clearInterval(interval);
     }, []);
 
+    // ── Guard 1: Chờ AuthContext đọc xong localStorage ────────────────────────
+    // Khi loading = true, token chưa được đọc xong → render null để tránh
+    // hiện flash login form rồi redirect ngay sau đó
+    if (loading) return null;
+
+    // ── Guard 2: Đã đăng nhập → redirect dashboard ────────────────────────────
+    // Dùng <Navigate> (declarative) thay vì useEffect (imperative) để tránh
+    // race condition với StrictMode và đảm bảo redirect xảy ra đúng trong
+    // render cycle, không phải sau đó một tick.
+    if (isAuthenticated) {
+        return <Navigate to="/dashboard" replace />;
+    }
+
     const onFinish = async (values) => {
         try {
+            // POST /api/auth/login
             const res = await loginApi(values);
-
             const authData = res.data.body;
 
-            // Cập nhật trạng thái đăng nhập vào AuthContext
-            login(authData.token, {
+            // Lưu token + thông tin user vào AuthContext & localStorage
+            login(authData.accessToken, authData.refreshToken, {
                 username: authData.username,
                 role: authData.role,
             });
 
-            message.success("Login Successful!");
-
+            message.success("Đăng nhập thành công!");
             navigate("/dashboard");
         } catch (error) {
             console.error(error);
-
             message.error(
                 error?.response?.data?.message ||
-                "Wrong username or password!"
+                "Sai tên đăng nhập hoặc mật khẩu!"
             );
         }
     };

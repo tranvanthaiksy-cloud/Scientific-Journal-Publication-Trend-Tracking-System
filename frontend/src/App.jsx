@@ -3,7 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-
+import PaperDetail from "./pages/PaperDetail";
+import SearchPapers from "./pages/SearchPapers.jsx";
 import Dashboard from "./pages/Dashboard";
 import TrendAnalysis from "./pages/TrendAnalysis";
 import TopicExplorer from "./pages/TopicExplorer";
@@ -50,7 +51,7 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
-
+                <Route path="/papers/:id" element={<PaperDetail />} />
                 <Route
                     path="/trends"
                     element={
@@ -86,7 +87,14 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
-
+                <Route
+                    path="/papers/search"
+                    element={
+                        <ProtectedRoute>
+                            <SearchPapers />
+                        </ProtectedRoute>
+                    }
+                />
             </Routes>
         </BrowserRouter>
     );

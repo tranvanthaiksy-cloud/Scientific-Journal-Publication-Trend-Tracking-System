@@ -22,4 +22,5 @@ public interface ResearchTopicRepository extends JpaRepository<ResearchTopic, Lo
            "  WHERE pt.year = :maxYear AND pt.growth_rate > 50.0" +
            ")", nativeQuery = true)
     void updateTrendingTopics(@Param("maxYear") int maxYear);
+
 }
