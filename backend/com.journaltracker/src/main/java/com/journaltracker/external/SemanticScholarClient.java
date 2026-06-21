@@ -1,5 +1,6 @@
-package com.journaltracker.client;
+package com.journaltracker.external;
 
+import com.journaltracker.client.ExternalApiClient;
 import com.journaltracker.dto.RawPaperData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,7 @@ public class SemanticScholarClient implements ExternalApiClient {
     private final ObjectMapper objectMapper;
 
     private static final RateLimiter RATE_LIMITER =
-            RateLimiter.create(100.0 / (5 * 60));
+            RateLimiter.create(1.0);
     @Value("${external-api.semanticscholar.base-url}")
     private String baseUrl;
 
@@ -55,15 +56,15 @@ public class SemanticScholarClient implements ExternalApiClient {
                 .queryParam("offset", offset)
                 .queryParam(
                         "fields",
-                        "title,abstract,year,authors,journal,externalIds"
+                        "title,abstract,year,authors,journal,publicationVenue,externalIds,url,s2FieldsOfStudy"
                 )
                 .toUriString();
 
         System.out.println(url);
-        HttpHeaders headers = new HttpHeaders();
-
+        HttpHeaders headers = new HttpHeaders();;
         if (apiKey != null && !apiKey.isBlank()) {
             headers.set("x-api-key", apiKey);
+
         }
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -95,8 +96,39 @@ public class SemanticScholarClient implements ExternalApiClient {
                     }
                 }
 
+                String externalId = paper.path("paperId").isMissingNode() || paper.path("paperId").isNull()
+                        ? null
+                        : paper.path("paperId").asText();
+
+                String doiValue = paper.path("externalIds").path("DOI").asText("");
+
+                String sourceUrlValue = paper.path("url").isMissingNode() || paper.path("url").isNull()
+                        ? null
+                        : paper.path("url").asText();
+
+                String journalIssnValue = paper.path("publicationVenue").path("issn").isMissingNode() || paper.path("publicationVenue").path("issn").isNull()
+                        ? null
+                        : paper.path("publicationVenue").path("issn").asText();
+
+                String journalNameValue = paper.path("journal").path("name").asText("");
+                if (journalNameValue.isEmpty()) {
+                    journalNameValue = paper.path("publicationVenue").path("name").asText("");
+                }
+
+                List<String> keywords = new ArrayList<>();
+                JsonNode s2Fields = paper.path("s2FieldsOfStudy");
+                if (s2Fields.isArray()) {
+                    for (JsonNode field : s2Fields) {
+                        String category = field.path("category").asText("");
+                        if (!category.isEmpty()) {
+                            keywords.add(category);
+                        }
+                    }
+                }
+
                 RawPaperData rawPaper = RawPaperData.builder()
-                        .doi(paper.path("externalIds").path("DOI").asText(""))
+                        .externalId(externalId)
+                        .doi(doiValue)
                         .title(paper.path("title").asText(""))
                         .abstractText(paper.path("abstract").asText(""))
                         .publicationYear(
@@ -104,10 +136,11 @@ public class SemanticScholarClient implements ExternalApiClient {
                                         ? null
                                         : paper.path("year").asInt()
                         )
-                        .journalName(
-                                paper.path("journal").path("name").asText("")
-                        )
+                        .sourceUrl(sourceUrlValue)
+                        .journalName(journalNameValue)
+                        .journalIssn(journalIssnValue)
                         .authorNames(authors)
+                        .keywords(keywords)
                         .build();
 
                 results.add(rawPaper);
@@ -134,7 +167,13 @@ public class SemanticScholarClient implements ExternalApiClient {
 
             String url = baseUrl + "/graph/v1/paper/search?query=AI&limit=1";
 
-            restTemplate.getForObject(url, String.class);
+            HttpHeaders headers = new HttpHeaders();
+            if (apiKey != null && !apiKey.isBlank()) {
+                headers.set("x-api-key", apiKey);
+            }
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
             return true;
 

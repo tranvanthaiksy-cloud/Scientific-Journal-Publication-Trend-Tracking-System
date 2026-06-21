@@ -46,7 +46,7 @@ external-api:
 
   semanticscholar:
     base-url: https://api.semanticscholar.org
-    api-key: ${SEMANTIC_SCHOLAR_API_KEY:}
+    api-key: ${SEMANTIC_SCHOLAR_API_KEY:s2k-YmN8g9YBCBZ1NQB7og4HdaQqFB6RSZbT6wCGw9Zt}
 
 sync:
   cron: ${SYNC_CRON:0 0 13 * * ?}
