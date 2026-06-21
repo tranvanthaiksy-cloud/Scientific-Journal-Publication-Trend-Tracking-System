@@ -1,36 +1,33 @@
 package com.journaltracker.client;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.journaltracker.dto.RawPaperData;
+import com.google.common.util.concurrent.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
-
-import com.google.common.util.concurrent.RateLimiter;
-
-import java.time.LocalDate;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class SemanticScholarClient implements ExternalApiClient {
 
-    private final RestTemplate restTemplate;
-
     private final ObjectMapper objectMapper;
 
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+
+    // 100 requests / 5 minutes
     private static final RateLimiter RATE_LIMITER =
             RateLimiter.create(100.0 / (5 * 60));
+
     @Value("${external-api.semanticscholar.base-url}")
     private String baseUrl;
 
@@ -46,6 +43,7 @@ public class SemanticScholarClient implements ExternalApiClient {
     public List<RawPaperData> fetchPapers(String query, int page, int pageSize) {
 
         RATE_LIMITER.acquire();
+
         int offset = (page - 1) * pageSize;
 
         String url = UriComponentsBuilder
@@ -53,50 +51,76 @@ public class SemanticScholarClient implements ExternalApiClient {
                 .queryParam("query", query)
                 .queryParam("limit", pageSize)
                 .queryParam("offset", offset)
-                .queryParam(
-                        "fields",
-                        "title,abstract,year,authors,journal,externalIds"
-                )
+                .queryParam("fields", "title,abstract,year,authors,journal,externalIds")
                 .toUriString();
 
-        System.out.println(url);
-        HttpHeaders headers = new HttpHeaders();
+        System.out.println("URL = " + url);
 
-        if (apiKey != null && !apiKey.isBlank()) {
-            headers.set("x-api-key", apiKey);
-        }
-
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
-                String.class
-        );
+        String body;
 
         try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("x-api-key", apiKey)
+                    .header("Accept", "application/json")
+                    .GET()
+                    .build();
 
-            JsonNode root = objectMapper.readTree(response.getBody());
+            HttpResponse<String> response =
+                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
+            System.out.println("STATUS = " + response.statusCode());
+
+            if (response.statusCode() != 200) {
+                throw new RuntimeException(
+                        "Semantic Scholar API failed: " + response.statusCode()
+                );
+            }
+
+            body = response.body();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to call Semantic Scholar API", e);
+        }
+
+        try {
+            JsonNode root = objectMapper.readTree(body);
             JsonNode papers = root.path("data");
 
             List<RawPaperData> results = new ArrayList<>();
 
             for (JsonNode paper : papers) {
 
+                // ===== AUTHORS =====
                 List<String> authors = new ArrayList<>();
-
                 JsonNode authorNodes = paper.path("authors");
 
                 if (authorNodes.isArray()) {
                     for (JsonNode author : authorNodes) {
-                        authors.add(author.path("name").asText(""));
+                        String name = author.path("name").asText(null);
+                        if (name != null && !name.isEmpty()) {
+                            authors.add(name);
+                        }
                     }
                 }
 
+                // ===== DOI =====
+                JsonNode externalIds = paper.path("externalIds");
+                String doi = (externalIds != null && !externalIds.isMissingNode())
+                        ? externalIds.path("DOI").asText("")
+                        : "";
+
+                // ===== JOURNAL =====
+                JsonNode journalNode = paper.path("journal");
+                String journalName = (journalNode != null
+                        && !journalNode.isMissingNode()
+                        && !journalNode.isNull())
+                        ? journalNode.path("name").asText("")
+                        : "";
+
+                // ===== BUILD DTO =====
                 RawPaperData rawPaper = RawPaperData.builder()
-                        .doi(paper.path("externalIds").path("DOI").asText(""))
+                        .doi(doi)
                         .title(paper.path("title").asText(""))
                         .abstractText(paper.path("abstract").asText(""))
                         .publicationYear(
@@ -104,9 +128,7 @@ public class SemanticScholarClient implements ExternalApiClient {
                                         ? null
                                         : paper.path("year").asInt()
                         )
-                        .journalName(
-                                paper.path("journal").path("name").asText("")
-                        )
+                        .journalName(journalName)
                         .authorNames(authors)
                         .build();
 
@@ -119,29 +141,31 @@ public class SemanticScholarClient implements ExternalApiClient {
             throw new RuntimeException("Failed to parse Semantic Scholar response", e);
         }
     }
+
     @Override
-    public List<RawPaperData> fetchRecentPapers(LocalDate fromDate, int page, int pageSize) {
-
+    public List<RawPaperData> fetchRecentPapers(java.time.LocalDate fromDate, int page, int pageSize) {
         String query = "year:" + fromDate.getYear();
-
         return fetchPapers(query, page, pageSize);
     }
 
     @Override
     public boolean isAvailable() {
-
         try {
-
             String url = baseUrl + "/graph/v1/paper/search?query=AI&limit=1";
 
-            restTemplate.getForObject(url, String.class);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("x-api-key", apiKey)
+                    .GET()
+                    .build();
 
-            return true;
+            HttpResponse<String> response =
+                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            return response.statusCode() == 200;
 
         } catch (Exception e) {
-
             return false;
-
         }
     }
 }
