@@ -107,7 +107,14 @@ function App() {
                         </Protected>
                     }
                 />
-                <Route path="/papers/:id" element={<PaperDetail />} />
+                <Route
+                    path="/papers/:id"
+                    element={
+                        <Protected>
+                            <PaperDetail />
+                        </Protected>
+                    }
+                />
             </Routes>
         </BrowserRouter>
     );
