@@ -43,12 +43,26 @@ function PaperDetail() {
                     id: Number(id) || 2,
                     title: "Advancements in Generative Neural Networks: A Comprehensive Analysis of Latent Space Optimization in Diffusion Models",
                     publicationYear: 2023,
-                    journalId: 1,
-                    journalName: "International Journal of Computational Vision & AI",
+                    journal: {
+                        id: 1,
+                        name: "International Journal of Computational Vision & AI"
+                    },
                     sourceUrl: "https://doi.org/10.1038/s41586-023-01234-x",
-                    authorNames: ["Dr. Helena V. Chen", "Marcus T. Sterling", "Isabella J. Russo"],
-                    abstract: "Generative Diffusion Models (GDMs) have emerged as the state-of-the-art paradigm for high-fidelity image synthesis. However, the computational overhead associated with iterative denoising in high-dimensional pixel space remains a significant bottleneck. This paper presents a novel framework for latent space optimization, leveraging hierarchical structural priors to accelerate convergence without compromising perceptual quality.\n\nOur methodology introduces a \"Dynamic Latent Refinement\" (DLR) algorithm that adaptively adjusts the step-size scheduling based on manifold curvature. Experimental results across major benchmarks, including ImageNet-1K and COCO-Stuff, demonstrate a 40% reduction in inference time compared to standard Latent Diffusion Models (LDMs). Furthermore, we provide a mathematical proof of stability for the DLR convergence path, offering new insights into the geometric properties of generative manifolds.\n\nWe conclude by discussing the ethical implications of high-efficiency generative systems, specifically focusing on data provenance and the mitigation of bias in synthesized outputs. The codebase and pre-trained weights have been made publicly available to foster further research in the academic community.",
-                    keywords: ["Diffusion Models", "Latent Space Optimization", "Neural Rendering", "Computer Vision", "Computational Geometry", "Generative AI"]
+                    doi: "doi.org/10.1038/s41586-023-01234-x",
+                    authors: [
+                        { id: 1, name: "Dr. Helena V. Chen" },
+                        { id: 2, name: "Marcus T. Sterling" },
+                        { id: 3, name: "Isabella J. Russo" }
+                    ],
+                    abstractText: "Generative Diffusion Models (GDMs) have emerged as the state-of-the-art paradigm for high-fidelity image synthesis. However, the computational overhead associated with iterative denoising in high-dimensional pixel space remains a significant bottleneck. This paper presents a novel framework for latent space optimization, leveraging hierarchical structural priors to accelerate convergence without compromising perceptual quality.\n\nOur methodology introduces a \"Dynamic Latent Refinement\" (DLR) algorithm that adaptively adjusts the step-size scheduling based on manifold curvature. Experimental results across major benchmarks, including ImageNet-1K and COCO-Stuff, demonstrate a 40% reduction in inference time compared to standard Latent Diffusion Models (LDMs). Furthermore, we provide a mathematical proof of stability for the DLR convergence path, offering new insights into the geometric properties of generative manifolds.\n\nWe conclude by discussing the ethical implications of high-efficiency generative systems, specifically focusing on data provenance and the mitigation of bias in synthesized outputs. The codebase and pre-trained weights have been made publicly available to foster further research in the academic community.",
+                    keywords: [
+                        { id: 1, name: "Diffusion Models" },
+                        { id: 2, name: "Latent Space Optimization" },
+                        { id: 3, name: "Neural Rendering" },
+                        { id: 4, name: "Computer Vision" },
+                        { id: 5, name: "Computational Geometry" },
+                        { id: 6, name: "Generative AI" }
+                    ]
                 });
                 setBookmarked(false);
             } finally {
@@ -105,10 +119,17 @@ function PaperDetail() {
         );
     }
 
-    // Process abstract paragraphs
-    const abstractParagraphs = paper.abstract
-        ? paper.abstract.split("\n").filter((p) => p.trim() !== "")
+    // Defensive mapping for PaperDetailResponse fields
+    const abstractText = paper.abstractText || paper.abstract || "";
+    const abstractParagraphs = abstractText
+        ? abstractText.split("\n").filter((p) => p.trim() !== "")
         : ["No abstract available for this publication."];
+
+    const journalName = paper.journal?.name || paper.journalName || "Not specified Journal";
+    const journalId = paper.journal?.id || paper.journalId;
+    const authorList = paper.authors || paper.authorNames || [];
+    const keywordList = paper.keywords || [];
+    const displayDoi = paper.doi || paper.sourceUrl || "";
 
     return (
         <div className="af-paper-canvas">
@@ -152,15 +173,15 @@ function PaperDetail() {
                     className="hover:text-primary transition-colors"
                     onClick={(e) => {
                         e.preventDefault();
-                        if (paper.journalId) {
-                            navigate(`/papers/search?journalId=${paper.journalId}`);
+                        if (journalId) {
+                            navigate(`/papers/search?journalId=${journalId}`);
                         } else {
                             navigate("/papers/search");
                         }
                     }}
                     style={{ color: "var(--color-on-surface-variant)", textDecoration: "none", fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.08em" }}
                 >
-                    {paper.journalName || "Publications"}
+                    {journalName}
                 </a>
                 <span className="material-symbols-outlined" style={{ fontSize: "14px", color: "var(--color-outline-variant)" }}>chevron_right</span>
                 <span className="text-primary font-bold" style={{ color: "var(--color-primary)", fontWeight: 700, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Current Paper</span>
@@ -208,21 +229,24 @@ function PaperDetail() {
                     <div className="af-meta-section">
                         <p className="af-meta-label">Authors</p>
                         <div className="af-authors-list">
-                            {paper.authorNames && paper.authorNames.length > 0 ? (
-                                paper.authorNames.map((author, index) => (
-                                    <a
-                                        key={index}
-                                        href={`#search-author`}
-                                        className="af-author-link"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            navigate(`/papers/search?q=${encodeURIComponent(author)}`);
-                                        }}
-                                    >
-                                        {author}
-                                        {index < paper.authorNames.length - 1 ? "," : ""}
-                                    </a>
-                                ))
+                            {authorList && authorList.length > 0 ? (
+                                authorList.map((author, index) => {
+                                    const name = typeof author === "object" ? author.name : author;
+                                    return (
+                                        <a
+                                            key={index}
+                                            href={`#search-author`}
+                                            className="af-author-link"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                navigate(`/papers/search?q=${encodeURIComponent(name)}`);
+                                            }}
+                                        >
+                                            {name}
+                                            {index < authorList.length - 1 ? "," : ""}
+                                        </a>
+                                    );
+                                })
                             ) : (
                                 <span className="af-journal-text" style={{ fontWeight: 400, color: "var(--color-on-surface-variant)" }}>
                                     Unknown Authors
@@ -233,18 +257,18 @@ function PaperDetail() {
                     <div className="af-meta-section">
                         <p className="af-meta-label">Source &amp; Journal</p>
                         <p className="af-journal-text">
-                            {paper.journalName || "Not specified Journal"} ({paper.publicationYear})
+                            {journalName} ({paper.publicationYear})
                         </p>
-                        {paper.sourceUrl && (
+                        {displayDoi && (
                             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
                                 <span className="material-symbols-outlined" style={{ fontSize: "16px", color: "var(--color-outline)" }}>link</span>
                                 <a
-                                    href={paper.sourceUrl}
+                                    href={displayDoi.startsWith("http") ? displayDoi : `https://${displayDoi}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="af-doi-link"
                                 >
-                                    {paper.sourceUrl.replace(/^https?:\/\/(www\.)?/, "")}
+                                    {displayDoi.replace(/^https?:\/\/(www\.)?/, "")}
                                 </a>
                             </div>
                         )}
@@ -262,19 +286,23 @@ function PaperDetail() {
                 </div>
 
                 {/* Keywords Tag block */}
-                {paper.keywords && paper.keywords.length > 0 && (
+                {keywordList && keywordList.length > 0 && (
                     <div className="af-keywords-section">
                         <p className="af-meta-label" style={{ marginBottom: "12px" }}>Keywords</p>
                         <div className="af-keywords-list">
-                            {paper.keywords.map((kw) => (
-                                <span
-                                    key={kw}
-                                    className="af-keyword-tag"
-                                    onClick={() => navigate(`/papers/search?q=${encodeURIComponent(kw)}`)}
-                                >
-                                    {kw}
-                                </span>
-                            ))}
+                            {keywordList.map((kw, index) => {
+                                const name = typeof kw === "object" ? kw.name : kw;
+                                const key = typeof kw === "object" ? (kw.id || index) : kw;
+                                return (
+                                    <span
+                                        key={key}
+                                        className="af-keyword-tag"
+                                        onClick={() => navigate(`/papers/search?q=${encodeURIComponent(name)}`)}
+                                    >
+                                        {name}
+                                    </span>
+                                );
+                            })}
                         </div>
                     </div>
                 )}
@@ -283,11 +311,11 @@ function PaperDetail() {
                 <footer className="af-paper-footer">
                     <div className="af-footer-item">
                         <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>database</span>
-                        <span>Source API: OpenAlex Core Metadata Index</span>
+                        <span>Source API: {paper.sourceApi || "OpenAlex Core Metadata Index"}</span>
                     </div>
                     <div className="af-footer-item">
                         <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>update</span>
-                        <span>Synchronized: {new Date().toLocaleDateString()} - Active State</span>
+                        <span>Synchronized: {paper.fetchedAt ? new Date(paper.fetchedAt).toLocaleDateString() : new Date().toLocaleDateString()}</span>
                     </div>
                     <div className="af-footer-actions">
                         <button

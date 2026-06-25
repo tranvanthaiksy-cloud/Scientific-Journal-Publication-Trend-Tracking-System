@@ -393,7 +393,7 @@ function SearchPapers() {
 
                                             <div style={{ marginBottom: 6 }}>
                                                 <Text>
-                                                    {paper.authorNames?.join(", ")}
+                                                    {(paper.authors || paper.authorNames)?.join(", ")}
                                                 </Text>
                                             </div>
 
