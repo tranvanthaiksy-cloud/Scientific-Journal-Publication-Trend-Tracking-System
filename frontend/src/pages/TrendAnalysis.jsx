@@ -8,7 +8,7 @@ import { trendApi } from '../api/trendApi';
 import { followApi } from '../api/followApi';
 
 /* ─── colour palette matching design system (dark academic tones) ─── */
-const PALETTE = ['#111827', '#0f766e', '#b91c1c', '#4f46e5', '#b45309'];
+const DARK_COLORS = ['#111827', '#0f766e', '#b91c1c'];
 
 /* ─── Growth Rate badge ─── */
 const GrowthBadge = ({ rate }) => {
@@ -178,7 +178,7 @@ const TrendAnalysis = () => {
                 }
             }
         } catch (err) {
-            console.error("Follow keyword thất bại", err);
+            console.error("Follow keyword failed", err);
         }
     };
 
@@ -609,7 +609,7 @@ const TrendAnalysis = () => {
                                 onFocus={() => setShowSuggest(true)}
                                 onBlur={() => setTimeout(() => setShowSuggest(false), 160)}
                             />
-                            <button className="ta-btn-add" onClick={() => addKeyword()}>Thêm</button>
+                            <button className="ta-btn-add" onClick={() => addKeyword()}>Add</button>
                             {showSuggest && filtered.length > 0 && (
                                 <div className="ta-suggest">
                                     {filtered.slice(0, 8).map(s => (
@@ -650,7 +650,7 @@ const TrendAnalysis = () => {
                             disabled={loading || selectedKeywords.length === 0}
                         >
                             <span className="material-symbols-outlined" style={{ fontSize: 18 }}>bar_chart</span>
-                            Phân tích
+                            Analyze
                         </button>
                     </div>
                 </div>
@@ -659,7 +659,7 @@ const TrendAnalysis = () => {
                 {selectedKeywords.length > 0 && (
                     <div className="ta-tags-row">
                         {selectedKeywords.map((kw, i) => {
-                            const col = PALETTE[i % PALETTE.length];
+                            const col = DARK_COLORS[i % DARK_COLORS.length];
                             return (
                                 <span key={kw} className="ta-tag" style={{ borderColor: col, color: col, background: col + '14' }}>
                                     {kw}
@@ -686,7 +686,7 @@ const TrendAnalysis = () => {
                         Keyword Growth Comparison
                         {selectedKeywords.map((kw, i) => (
                             <span key={kw} className="ta-legend-pill">
-                                <span className="ta-legend-dot" style={{ background: PALETTE[i % PALETTE.length] }} />
+                                <span className="ta-legend-dot" style={{ background: DARK_COLORS[i % DARK_COLORS.length] }} />
                                 {kw}
                             </span>
                         ))}
@@ -701,7 +701,7 @@ const TrendAnalysis = () => {
                     ) : chartData.length === 0 ? (
                         <div className="ta-chart-empty">
                             <span className="material-symbols-outlined" style={{ fontSize: 40, color: 'var(--color-outline-variant)' }}>show_chart</span>
-                            <span>Click "Phân tích" to generate the chart</span>
+                            <span>Click "Analyze" to generate the chart</span>
                         </div>
                     ) : (
                         <div style={{ width: '100%', height: 340 }}>
@@ -721,19 +721,24 @@ const TrendAnalysis = () => {
                                         width={42}
                                     />
                                     <Tooltip content={<CustomTooltip />} />
-                                    {selectedKeywords.map((kw, i) => (
-                                        <Line
-                                            key={kw}
-                                            type="monotone"
-                                            dataKey={kw}
-                                            name={kw}
-                                            stroke={PALETTE[i % PALETTE.length]}
-                                            strokeWidth={2.5}
-                                            dot={{ r: 4, strokeWidth: 2, fill: '#fff', stroke: PALETTE[i % PALETTE.length] }}
-                                            activeDot={{ r: 6, strokeWidth: 0 }}
-                                            animationDuration={1200}
-                                        />
-                                    ))}
+                                    {selectedKeywords.map((kw, i) => {
+                                        const color = DARK_COLORS[i % DARK_COLORS.length];
+                                        const isDashed = i >= DARK_COLORS.length;
+                                        return (
+                                            <Line
+                                                key={kw}
+                                                type="monotone"
+                                                dataKey={kw}
+                                                name={kw}
+                                                stroke={color}
+                                                strokeDasharray={isDashed ? "5 5" : undefined}
+                                                strokeWidth={2.5}
+                                                dot={{ r: 4, strokeWidth: 2, fill: '#fff', stroke: color }}
+                                                activeDot={{ r: 6, strokeWidth: 0 }}
+                                                animationDuration={1200}
+                                            />
+                                        );
+                                    })}
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
@@ -771,7 +776,7 @@ const TrendAnalysis = () => {
                                             borderRadius: "4px",
                                             transition: "all 0.2s"
                                         }}
-                                        title={followedKeywords.some(f => f.targetName === item.name) ? "Ngừng theo dõi từ khóa" : "Theo dõi từ khóa"}
+                                        title={followedKeywords.some(f => f.targetName === item.name) ? "Unfollow keyword" : "Follow keyword"}
                                     >
                                         <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
                                             {followedKeywords.some(f => f.targetName === item.name) ? "check_circle" : "add_circle"}
@@ -804,7 +809,7 @@ const TrendAnalysis = () => {
                         </div>
                     ) : tableData.length === 0 ? (
                         <div style={{ textAlign: 'center', color: 'var(--color-on-surface-variant)', padding: 40, fontSize: 14, fontFamily: 'var(--font-body)' }}>
-                            No data — click "Phân tích" to load statistics
+                            No data — click "Analyze" to load statistics
                         </div>
                     ) : (
                         <table className="ta-table">

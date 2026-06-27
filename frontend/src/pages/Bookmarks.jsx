@@ -10,6 +10,8 @@ function Bookmarks() {
     const pageSize = 5;
     const [total, setTotal] = useState(0);
 
+    const [sortByDateDir, setSortByDateDir] = useState("desc"); // "desc" or "asc"
+
     const loadBookmarks = async (currentPage = 1) => {
         try {
             setLoading(true);
@@ -27,10 +29,17 @@ function Bookmarks() {
                 keywords: p.keywords || ["Research"]
             }));
 
+            // Sort by publicationYear
+            mappedDb.sort((a, b) => {
+                const yearA = parseInt(a.publicationYear, 10) || 0;
+                const yearB = parseInt(b.publicationYear, 10) || 0;
+                return sortByDateDir === "desc" ? yearB - yearA : yearA - yearB;
+            });
+
             setPapers(mappedDb);
             setTotal(body.totalElements || 0);
         } catch (e) {
-            console.error("Không tải được danh sách bookmark", e);
+            console.error("Failed to load bookmarks list", e);
             setPapers([]);
             setTotal(0);
         } finally {
@@ -39,18 +48,18 @@ function Bookmarks() {
     };
 
     useEffect(() => {
-        loadBookmarks(1);
-    }, []);
+        loadBookmarks(page);
+    }, [page, sortByDateDir]);
 
     const handleRemove = async (item) => {
-        const confirmRemove = window.confirm(`Bạn có chắc chắn muốn bỏ lưu bài báo "${item.title}"?`);
+        const confirmRemove = window.confirm(`Are you sure you want to remove the paper "${item.title}" from bookmarks?`);
         if (!confirmRemove) return;
 
         try {
             await removeBookmark(item.id);
             loadBookmarks(page);
         } catch {
-            console.error("Bỏ bookmark thất bại");
+            console.error("Bookmark removal failed");
         }
     };
 
@@ -350,13 +359,19 @@ function Bookmarks() {
                     </p>
                 </div>
                 <div className="bm-header-actions">
-                    <button className="bm-btn-action">
-                        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>tune</span>
-                        Filter
-                    </button>
-                    <button className="bm-btn-action">
-                        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>sort</span>
-                        Sort by Date
+                    <button 
+                        className="bm-btn-action" 
+                        onClick={() => setSortByDateDir(prev => prev === "desc" ? "asc" : "desc")}
+                        style={{
+                            borderColor: "#0f766e",
+                            color: "#0f766e",
+                            background: "#f0fdfa"
+                        }}
+                    >
+                        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                            {sortByDateDir === "desc" ? "arrow_downward" : "arrow_upward"}
+                        </span>
+                        Sort by Date: {sortByDateDir === "desc" ? "Newest" : "Oldest"}
                     </button>
                 </div>
             </div>
@@ -369,7 +384,7 @@ function Bookmarks() {
                 </div>
             ) : papers.length === 0 ? (
                 <div className="bm-paper-card" style={{ padding: '60px 24px', textAlign: 'center', color: 'var(--color-on-surface-variant)' }}>
-                    Bạn chưa lưu bài báo nào. Hãy tìm kiếm và lưu bài báo quan tâm!
+                    You have not bookmarked any papers yet. Search and bookmark publications of your interest!
                 </div>
             ) : (
                 <>
@@ -400,7 +415,7 @@ function Bookmarks() {
                                         <button
                                             className="bm-btn-bookmark"
                                             onClick={() => handleRemove(paper)}
-                                            title="Bỏ lưu bài báo"
+                                            title="Remove from bookmarks"
                                         >
                                             <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 1' }}>bookmark</span>
                                         </button>
