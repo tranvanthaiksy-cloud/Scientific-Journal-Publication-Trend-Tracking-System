@@ -48,11 +48,11 @@ public class ResearchTopicServiceImpl implements ResearchTopicService {
     @Transactional
     public TopicResponse updateTopic(Long id, UpdateTopicRequest request) {
         ResearchTopic topic = topicRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("Topic không tồn tại"));
+                .orElseThrow(() -> new BadRequestException("Topic does not exist"));
 
         topic.setName(request.getName());
         topic.setDescription(request.getDescription());
-        topic.setTrending(request.isTrending()); // Lombok generate setTrending cho primitive boolean
+        topic.setTrending(request.isTrending()); // Lombok generates setTrending for primitive boolean
 
         return mapToResponse(topicRepository.save(topic));
     }
@@ -61,7 +61,7 @@ public class ResearchTopicServiceImpl implements ResearchTopicService {
     @Transactional
     public void deleteTopic(Long id) {
         ResearchTopic topic = topicRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("Topic không tồn tại"));
+                .orElseThrow(() -> new BadRequestException("Topic does not exist"));
 
         topic.getKeywords().clear();
         topicRepository.save(topic);
@@ -78,13 +78,18 @@ public class ResearchTopicServiceImpl implements ResearchTopicService {
     @Transactional(readOnly = true)
     public TopicDetailResponse getTopicById(Long id) {
         ResearchTopic topic = topicRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("Topic không tồn tại"));
+                .orElseThrow(() -> new BadRequestException("Topic does not exist"));
+
+        List<TopicDetailResponse.KeywordDto> keywordDtos = topic.getKeywords().stream()
+                .map(k -> new TopicDetailResponse.KeywordDto(k.getId(), k.getName()))
+                .toList();
 
         return TopicDetailResponse.builder()
                 .id(topic.getId())
                 .name(topic.getName())
                 .description(topic.getDescription())
                 .isTrending(topic.isTrending())
+                .keywords(keywordDtos)
                 .build();
     }
 
@@ -92,9 +97,9 @@ public class ResearchTopicServiceImpl implements ResearchTopicService {
     @Transactional
     public void addKeywordToTopic(Long topicId, Long keywordId) {
         ResearchTopic topic = topicRepository.findById(topicId)
-                .orElseThrow(() -> new BadRequestException("Topic không tồn tại"));
+                .orElseThrow(() -> new BadRequestException("Topic does not exist"));
         Keyword keyword = keywordRepository.findById(keywordId)
-                .orElseThrow(() -> new BadRequestException("Keyword không tồn tại"));
+                .orElseThrow(() -> new BadRequestException("Keyword does not exist"));
 
         topic.getKeywords().add(keyword);
         topicRepository.save(topic);
@@ -104,9 +109,9 @@ public class ResearchTopicServiceImpl implements ResearchTopicService {
     @Transactional
     public void removeKeywordFromTopic(Long topicId, Long keywordId) {
         ResearchTopic topic = topicRepository.findById(topicId)
-                .orElseThrow(() -> new BadRequestException("Topic không tồn tại"));
+                .orElseThrow(() -> new BadRequestException("Topic does not exist"));
         Keyword keyword = keywordRepository.findById(keywordId)
-                .orElseThrow(() -> new BadRequestException("Keyword không tồn tại"));
+                .orElseThrow(() -> new BadRequestException("Keyword does not exist"));
 
         topic.getKeywords().remove(keyword);
         topicRepository.save(topic);
