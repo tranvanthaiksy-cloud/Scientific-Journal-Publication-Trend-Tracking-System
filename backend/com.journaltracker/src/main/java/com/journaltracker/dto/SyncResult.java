@@ -1,5 +1,6 @@
 package com.journaltracker.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.journaltracker.entity.ResearchPaper;
 import lombok.Data;
 
@@ -15,5 +16,7 @@ public class SyncResult {
     private int duplicates;
     private int errors;
     private LocalDate syncedAt;
+
+    @JsonIgnore
     private List<ResearchPaper> syncedPapers = new ArrayList<>();
 }

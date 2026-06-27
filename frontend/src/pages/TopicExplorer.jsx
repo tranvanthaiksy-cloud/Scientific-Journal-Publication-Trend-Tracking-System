@@ -54,9 +54,8 @@ const TopicExplorer = () => {
                     title: topic.name,
                     description: topic.description || `Exploration of emerging trends in the field of "${topic.name}".`,
                     isTrending: !!isTrending,
-                    keywords: [topic.name], // Fallback keyword is the topic name itself
-                    usageCountText: isTrending ? "Active Trend" : "Standard Topic",
-                    usageCount: 0,
+                    keywords: topic.keywords || [topic.name],
+                    usageCount: topic.paperCount || 0,
                     isDefault: false
                 };
             });
@@ -282,27 +281,30 @@ const TopicExplorer = () => {
                     min-height: 24px;
                 }
                 .te-trending-badge {
-                    background: linear-gradient(135deg, #111827 0%, #0f766e 100%);
-                    color: #fff;
-                    font-family: var(--font-data);
-                    font-size: 10px;
-                    font-weight: 800;
-                    padding: 3px 10px;
+                    background: #ccfbf1;
+                    color: #0f766e;
+                    font-family: var(--font-ui);
+                    font-size: 10.5px;
+                    font-weight: 700;
+                    padding: 4px 10px;
                     border-radius: 9999px;
                     text-transform: uppercase;
-                    letter-spacing: 0.05em;
+                    letter-spacing: 0.06em;
                     display: inline-flex;
                     align-items: center;
-                    gap: 4px;
-                    box-shadow: 0 4px 10px rgba(15, 118, 110, 0.2);
+                    gap: 5px;
+                    line-height: 1;
                 }
-                .te-trending-badge span { font-size: 13px; }
+                .te-trending-badge span { 
+                    font-size: 14px; 
+                    line-height: 1;
+                }
                 .te-papers-count {
-                    font-family: var(--font-data);
-                    font-size: 12px;
-                    font-weight: 700;
-                    color: var(--color-on-surface-variant);
-                    text-transform: uppercase;
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                    font-size: 15px;
+                    font-weight: 500;
+                    color: #475569;
+                    letter-spacing: -0.01em;
                 }
                 
                 .te-card-title {
@@ -334,19 +336,19 @@ const TopicExplorer = () => {
                     margin-top: 14px;
                 }
                 .te-tag-pill {
-                    background: #f0fdfa;
-                    color: #0f766e;
-                    border: 1.5px dashed #ccfbf1;
+                    background: #f3f4f6;
+                    color: #4b5563;
+                    border: none;
                     font-family: var(--font-ui);
                     font-size: 11px;
                     font-weight: 700;
                     padding: 4px 10px;
-                    border-radius: 6px;
+                    border-radius: 4px;
                     transition: all 0.2s;
                 }
                 .te-tag-pill:hover {
-                    background: #ccfbf1;
-                    border-color: #0f766e;
+                    background: #e5e7eb;
+                    color: #1f2937;
                 }
                 
                 .te-divider {
@@ -380,14 +382,14 @@ const TopicExplorer = () => {
                 
                 /* Follow buttons */
                 .te-btn-follow {
-                    height: 34px;
+                    height: 38px;
                     padding: 0 16px;
-                    background: transparent;
-                    color: #0f766e;
-                    border: 1.5px solid #0f766e;
+                    background: #fff;
+                    color: #111827;
+                    border: 1.5px solid #111827;
                     border-radius: 6px;
                     font-family: var(--font-ui);
-                    font-size: 13px;
+                    font-size: 13.5px;
                     font-weight: 700;
                     cursor: pointer;
                     display: inline-flex;
@@ -396,19 +398,17 @@ const TopicExplorer = () => {
                     transition: all 0.2s;
                 }
                 .te-btn-follow:hover {
-                    background: #f0fdfa;
-                    color: #0d6059;
-                    border-color: #0d6059;
+                    background: #f9fafb;
                 }
                 .te-btn-followed {
-                    height: 34px;
+                    height: 38px;
                     padding: 0 16px;
-                    background: #0f766e;
+                    background: #111827;
                     color: #fff;
-                    border: 1.5px solid #0f766e;
+                    border: 1.5px solid #111827;
                     border-radius: 6px;
                     font-family: var(--font-ui);
-                    font-size: 13px;
+                    font-size: 13.5px;
                     font-weight: 700;
                     cursor: pointer;
                     display: inline-flex;
@@ -417,8 +417,8 @@ const TopicExplorer = () => {
                     transition: all 0.2s;
                 }
                 .te-btn-followed:hover {
-                    background: #0d6059;
-                    border-color: #0d6059;
+                    background: #1f2937;
+                    border-color: #1f2937;
                 }
                 
                 /* Modal Overlay & Card Details popup */
@@ -555,7 +555,13 @@ const TopicExplorer = () => {
                                     )}
                                 </div>
                                 <span className="te-papers-count">
-                                    {topic.usageCountText}
+                                    {(() => {
+                                        const count = topic.usageCount || 0;
+                                        if (count >= 1000) {
+                                            return (count / 1000).toFixed(1).replace(/\.0$/, "") + "k+ Papers";
+                                        }
+                                        return count + " Papers";
+                                    })()}
                                 </span>
                             </div>
 
