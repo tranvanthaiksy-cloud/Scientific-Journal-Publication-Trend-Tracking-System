@@ -1,5 +1,6 @@
 package com.journaltracker.service.impl;
 
+import com.journaltracker.entity.Role;
 import com.journaltracker.dto.request.ChangePasswordRequest;
 import com.journaltracker.dto.request.UpdateProfileRequest;
 import com.journaltracker.dto.response.UserPageResponse;
@@ -63,16 +64,14 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    // =========================================================================
-    // 🔥 TRIỂN KHAI CHI TIẾT 4 HÀM MỚI CHO ADMIN QUẢN LÝ USERS (JP-13)
-    // =========================================================================
+
 
     @Override
     @Transactional(readOnly = true)
     public UserPageResponse getAdminUsers(int page, int size, String search, String role) {
         Pageable pageable = PageRequest.of(page, size);
-
         Page<User> userPage = userRepository.searchAndFilterUsers(search, role, pageable);
+
 
         List<UserResponse> userResponses = userPage.getContent().stream()
                 .map(this::toResponse)

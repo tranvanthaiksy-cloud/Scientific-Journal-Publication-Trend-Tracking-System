@@ -1,5 +1,7 @@
 package com.journaltracker.repository;
 
+import com.journaltracker.entity.Role;
+
 import com.journaltracker.entity.User;
 
 import java.util.Optional;
@@ -34,7 +36,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
         Page<User> searchAndFilterUsersInternal(@Param("search") String search,
                         @Param("role") Role role,
                         Pageable pageable);
-
         default Page<User> searchAndFilterUsers(String search, String role, Pageable pageable) {
                 Role roleEnum = null;
                 if (role != null && !role.trim().isEmpty()) {
@@ -45,4 +46,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 }
                 return searchAndFilterUsersInternal(search, roleEnum, pageable);
         }
+
 }
