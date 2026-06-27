@@ -11,7 +11,7 @@ import TopicExplorer from "./pages/TopicExplorer";
 import Following from "./pages/Following";
 import Reports from "./pages/Reports";
 import Bookmarks from "./pages/Bookmarks";
-import AdminPanel from "./pages/AdminPanel";
+import AdminPanel from "./pages/AdminPanel.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout/Layout";
