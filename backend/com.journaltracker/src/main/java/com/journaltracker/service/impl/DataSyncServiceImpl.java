@@ -11,6 +11,7 @@ import com.journaltracker.repository.AuthorRepository;
 import com.journaltracker.repository.JournalRepository;
 import com.journaltracker.repository.KeywordRepository;
 import com.journaltracker.repository.PaperRepository;
+import com.journaltracker.properties.SyncProperties;
 import com.journaltracker.service.DataSyncService;
 import com.journaltracker.service.DeduplicationService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class DataSyncServiceImpl implements DataSyncService {
     private final AuthorRepository authorRepository;
     private final KeywordRepository keywordRepository;
     private final DeduplicationService deduplicationService;
+    private final SyncProperties syncProperties;
 
     @Autowired
     @Lazy
@@ -154,13 +156,18 @@ public class DataSyncServiceImpl implements DataSyncService {
 
     public ExternalApiClient findExternalApiClient(String nameClient) {
         return clientList.stream()
-                .filter(name -> name.getSourceName().equalsIgnoreCase(nameClient))
+                .filter(name -> name.getSourceName().replaceAll("\\s+", "")
+                        .equalsIgnoreCase(nameClient.replaceAll("\\s+", "")))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Source not found"));
     }
 
     @Override
     public SyncResult syncFromSource(String sourceName, String query) {
+        String activeQuery = (query == null || query.isBlank()) ? syncProperties.getDefaultQuery() : query;
+        if (activeQuery == null || activeQuery.isBlank()) {
+            activeQuery = "machine learning";
+        }
         ExternalApiClient client = findExternalApiClient(sourceName);
         SyncResult result = new SyncResult();
         int page = 1;
@@ -168,7 +175,7 @@ public class DataSyncServiceImpl implements DataSyncService {
         int totalFetched = 0;
         result.setSourceName(sourceName);
         while (true) {
-            List<RawPaperData> batch = client.fetchPapers(query, page, pageSize);
+            List<RawPaperData> batch = client.fetchPapers(activeQuery, page, pageSize);
             if (batch == null || batch.isEmpty()) {
                 break;
             }

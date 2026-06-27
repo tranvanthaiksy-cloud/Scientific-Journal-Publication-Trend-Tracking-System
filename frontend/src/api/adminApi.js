@@ -14,10 +14,10 @@ export const adminApi = {
         axiosInstance.get('/admin/datasources'),
     
     updateDataSourceStatus: (id, active) =>
-        axiosInstance.put(`/admin/datasources/${id}`, null, { params: { active } }),
+        axiosInstance.put(`/admin/datasources/${id}`, { isActive: active }),
     
-    triggerSync: (id) =>
-        axiosInstance.post(`/admin/sync/trigger`, null, { params: { sourceId: id } }),
+    triggerSync: (sourceName, query = "") =>
+        axiosInstance.post(`/admin/sync/trigger`, { sourceName, query }),
     
     getSystemStats: () =>
         axiosInstance.get('/admin/stats')

@@ -15,18 +15,6 @@ const mockSources = [
     { id: 2, name: "ArXiv API", baseUrl: "http://export.arxiv.org", active: true, lastSyncAt: "2026-06-27 09:30:00" }
 ];
 
-const mockStats = {
-    totalUsers: 142,
-    totalPapers: 12450,
-    totalSyncs: 89,
-    lastSyncTime: "2h ago",
-    history: [
-        { id: 1, source: "Semantic Scholar API", time: "2h ago", result: "Success (12 new papers, 45 duplicates)" },
-        { id: 2, source: "ArXiv API", time: "5h ago", result: "Success (8 new papers, 12 duplicates)" },
-        { id: 3, source: "Semantic Scholar API", time: "1d ago", result: "Failed (Timeout error)" }
-    ]
-};
-
 function AdminPanel() {
     const [activeTab, setActiveTab] = useState("users");
 
@@ -43,10 +31,6 @@ function AdminPanel() {
     const [syncingId, setSyncingId] = useState(null);
     const [syncResult, setSyncResult] = useState(null);
     const [sourcesLoading, setSourcesLoading] = useState(false);
-
-    // Tab 3 (Stats) states
-    const [stats, setStats] = useState(mockStats);
-    const [statsLoading, setStatsLoading] = useState(false);
 
     // Tab 4 (Research Topics CRUD) states
     const [topics, setTopics] = useState([]);
@@ -243,7 +227,7 @@ function AdminPanel() {
         setSourcesLoading(true);
         try {
             const res = await adminApi.getDataSources();
-            const list = res.data?.body || [];
+            const list = Array.isArray(res.data) ? res.data : (res.data?.body || []);
             if (list.length === 0) {
                 setSources(mockSources);
             } else {
@@ -251,7 +235,7 @@ function AdminPanel() {
                     id: s.id,
                     name: s.name,
                     baseUrl: s.baseUrl,
-                    active: s.active !== false,
+                    active: s.isActive !== undefined ? s.isActive : (s.active !== false),
                     lastSyncAt: s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleString() : "Never"
                 })));
             }
@@ -263,38 +247,12 @@ function AdminPanel() {
         }
     };
 
-    // Load system stats
-    const fetchStats = async () => {
-        setStatsLoading(true);
-        try {
-            const res = await adminApi.getSystemStats();
-            const data = res.data?.body;
-            if (data) {
-                setStats({
-                    totalUsers: data.totalUsers || 0,
-                    totalPapers: data.totalPapers || 0,
-                    totalSyncs: data.totalSyncs || 0,
-                    lastSyncTime: data.lastSyncTime || "N/A",
-                    history: data.history || []
-                });
-            } else {
-                setStats(mockStats);
-            }
-        } catch (e) {
-            setStats(mockStats);
-        } finally {
-            setStatsLoading(false);
-        }
-    };
-
     // Switch tab handler
     useEffect(() => {
         if (activeTab === "users") {
             fetchUsers(page);
         } else if (activeTab === "sources") {
             fetchSources();
-        } else if (activeTab === "stats") {
-            fetchStats();
         } else if (activeTab === "topics") {
             fetchTopicsList(topicsPage);
             fetchKeywords();
@@ -336,28 +294,22 @@ function AdminPanel() {
     };
 
     // Handle sync trigger
-    const handleSyncTrigger = async (sourceId) => {
+    const handleSyncTrigger = async (sourceItem) => {
         if (syncingId) return;
-        setSyncingId(sourceId);
+        setSyncingId(sourceItem.id);
         setSyncResult(null);
         try {
-            const res = await adminApi.triggerSync(sourceId);
-            const body = res.data?.body || {};
+            const res = await adminApi.triggerSync(sourceItem.name, "");
+            const body = res.data || {};
             setSyncResult({
                 status: "success",
-                newPapers: body.newPapersCount || 12,
-                duplicates: body.duplicatesCount || 45,
-                errors: body.errorsCount || 0
+                newPapers: body.newPapers !== undefined ? body.newPapers : 0,
+                duplicates: body.duplicates !== undefined ? body.duplicates : 0,
+                errors: body.errors !== undefined ? body.errors : 0
             });
             fetchSources();
         } catch (e) {
-            console.error("Sync failed, simulating results:", e);
-            setSyncResult({
-                status: "success",
-                newPapers: Math.floor(Math.random() * 15) + 5,
-                duplicates: Math.floor(Math.random() * 50) + 10,
-                errors: 0
-            });
+            console.error("Sync failed:", e);
         } finally {
             setSyncingId(null);
         }
@@ -956,12 +908,6 @@ function AdminPanel() {
                 >
                     API Data Sources
                 </button>
-                <button
-                    className={`adm-tab-btn ${activeTab === "stats" ? "active" : ""}`}
-                    onClick={() => setActiveTab("stats")}
-                >
-                    System Stats
-                </button>
             </div>
 
             {/* Tab 1: User Management */}
@@ -1133,7 +1079,7 @@ function AdminPanel() {
                                                     <button
                                                         className="adm-btn-sync"
                                                         disabled={syncingId !== null}
-                                                        onClick={() => handleSyncTrigger(s.id)}
+                                                        onClick={() => handleSyncTrigger(s)}
                                                     >
                                                         {syncingId === s.id ? (
                                                             <div className="adm-loading-spinner" />
@@ -1153,57 +1099,7 @@ function AdminPanel() {
                 </>
             )}
 
-            {/* Tab 3: System Stats */}
-            {activeTab === "stats" && (
-                <>
-                    {/* Summary cards */}
-                    <div className="adm-stats-grid">
-                        <div className="adm-stat-card">
-                            <h4>Total Users</h4>
-                            <div className="adm-stat-val">{stats.totalUsers}</div>
-                        </div>
-                        <div className="adm-stat-card">
-                            <h4>Total Papers</h4>
-                            <div className="adm-stat-val">{stats.totalPapers.toLocaleString()}</div>
-                        </div>
-                        <div className="adm-stat-card">
-                            <h4>Total Syncs</h4>
-                            <div className="adm-stat-val">{stats.totalSyncs}</div>
-                        </div>
-                        <div className="adm-stat-card">
-                            <h4>Last Sync</h4>
-                            <div className="adm-stat-val" style={{ fontSize: "24px", paddingTop: "8px" }}>{stats.lastSyncTime}</div>
-                        </div>
-                    </div>
 
-                    {/* Sync History Table */}
-                    <div className="adm-table-card">
-                        <div style={{ padding: "16px 20px", borderBottom: "1.5px solid var(--color-outline-variant)", background: "#f8fafc" }}>
-                            <h4 style={{ margin: 0, fontFamily: "var(--font-ui)", fontSize: "14px", fontWeight: 700 }}>Sync History (Last 5 Logs)</h4>
-                        </div>
-                        <div className="adm-table-scroll">
-                            <table className="adm-table">
-                                <thead>
-                                    <tr>
-                                        <th style={{ width: "30%" }}>Source</th>
-                                        <th style={{ width: "20%" }}>Time</th>
-                                        <th style={{ width: "50%" }}>Result Details</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {stats.history.map(h => (
-                                        <tr key={h.id}>
-                                            <td style={{ fontWeight: 700, color: "var(--color-primary)" }}>{h.source}</td>
-                                            <td style={{ fontFamily: "var(--font-data)" }}>{h.time}</td>
-                                            <td style={{ fontFamily: "var(--font-ui)", fontSize: "13px" }}>{h.result}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </>
-            )}
 
             {/* Tab 4: Research Topics CRUD */}
             {activeTab === "topics" && (
