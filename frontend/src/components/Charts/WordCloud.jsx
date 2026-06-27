@@ -2,89 +2,83 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Spin, Empty, Tooltip } from 'antd';
 
-const colors = [
-    '#1890ff',
-    '#2f54eb',
-    '#722ed1',
-    '#13c2c2',
-    '#52c41a',
-    '#faad14',
-    '#f5222d',
-    '#eb2f96',
-    '#fa8c16',
-    '#096dd9',
-    '#389e0d',
-    '#ad2102',
-    '#10085a',
-    '#02a8a8',
-];
-
-const getKeywordColor = (keyword) => {
-    let hash = 0;
-    for (let i = 0; i < keyword.length; i++) {
-        hash = keyword.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const index = Math.abs(hash) % colors.length;
-    return colors[index];
-};
-
 const WordCloud = ({ data, loading }) => {
     const navigate = useNavigate();
 
+    const getColor = (val, maxVal, minVal, text) => {
+        if (maxVal > minVal && val === maxVal) {
+            return '#006a61'; // Deep teal for the largest word
+        }
+        const colors = ['#0f172a', '#64748b', '#0f9f90'];
+        let h = 0;
+        for (let i = 0; i < text.length; i++) h = text.charCodeAt(i) + ((h << 5) - h);
+        return colors[Math.abs(h) % colors.length];
+    };
+
     if (loading) {
         return (
-            <div style={{ textAlign: 'center', padding: '50px 0' }}>
-                <Spin tip="Đang tải vũ trụ từ khóa..." size="large" />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 240 }}>
+                <Spin tip="Loading keyword cloud..." size="large" />
             </div>
         );
     }
 
     if (!data || data.length === 0) {
         return (
-            <div style={{ padding: '40px 0' }}>
-                <Empty description="Không có dữ liệu từ khóa" />
+            <div style={{ padding: '40px 0', textAlign: 'center' }}>
+                <Empty description="No keyword data available" />
             </div>
         );
     }
 
-    const words = data.map((item, index) => {
-        const text = item.name || item.text || item.keyword || `Keyword-${index}`;
-        const value = item.usageCount !== undefined ? item.usageCount : (item.value || 0);
-        return { text, value };
-    });
+    const sortedWords = [...data]
+        .map((item, index) => {
+            const text = item.name || item.text || item.keyword || `Keyword-${index}`;
+            const value = item.usageCount !== undefined ? item.usageCount : (item.value || 0);
+            return { text, value };
+        })
+        .sort((a, b) => b.value - a.value);
 
-    const minVal = Math.min(...words.map(w => w.value));
-    const maxVal = Math.max(...words.map(w => w.value));
+    if (!sortedWords.length) {
+        return (
+            <div style={{ padding: '40px 0', textAlign: 'center' }}>
+                <Empty description="No keyword data available" />
+            </div>
+        );
+    }
 
-    const getFontSize = (value) => {
-        if (maxVal === minVal) return 24;
-        return 14 + ((value - minVal) / (maxVal - minVal)) * (60 - 14);
-    };
+    const min = sortedWords[sortedWords.length - 1].value;
+    const max = sortedWords[0].value;
+    const fs = (v) => (max === min ? 24 : 14 + ((v - min) / (max - min)) * 36);
+
+    // Reorder from inside out: largest in center, smaller outwards
+    const arrangedWords = [];
+    for (let i = 0; i < sortedWords.length; i++) {
+        if (i % 2 === 0) {
+            arrangedWords.push(sortedWords[i]);
+        } else {
+            arrangedWords.unshift(sortedWords[i]);
+        }
+    }
 
     const styleSheet = `
-        @keyframes wordCloudFadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.7) translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
+        @keyframes wc-fade {
+            from { opacity: 0; transform: scale(0.72); }
+            to   { opacity: 1; transform: scale(1); }
         }
-        .word-cloud-item {
+        .wc-item {
             display: inline-block;
             cursor: pointer;
             font-weight: 700;
             line-height: 1.3;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
             opacity: 0;
-            animation: wordCloudFadeIn 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+            animation: wc-fade 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
         }
-        .word-cloud-item:hover {
+        .wc-item:hover {
             transform: scale(1.15) !important;
             filter: brightness(1.2);
-            text-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-shadow: 0 4px 12px rgba(0,0,0,0.08);
             z-index: 10;
         }
     `;
@@ -98,24 +92,25 @@ const WordCloud = ({ data, loading }) => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 alignContent: 'center',
-                gap: '12px 18px',
-                padding: '24px',
+                gap: '24px 36px',
+                padding: '24px 12px',
                 background: '#fff',
                 borderRadius: '12px',
-                minHeight: '320px',
+                minHeight: '240px',
                 overflow: 'hidden',
                 width: '100%',
                 boxSizing: 'border-box'
             }}>
-                {words.map((word, index) => (
+                {arrangedWords.map((word, index) => (
                     <Tooltip key={index} title={`${word.text}: ${word.value} papers`} placement="top">
                         <span
-                            className="word-cloud-item"
+                            className="wc-item"
                             onClick={() => navigate(`/papers/search?keyword=${encodeURIComponent(word.text)}`)}
                             style={{
-                                fontSize: `${getFontSize(word.value)}px`,
-                                color: getKeywordColor(word.text),
-                                animationDelay: `${index * 20}ms`
+                                fontSize: `${fs(word.value)}px`,
+                                color: getColor(word.value, max, min, word.text),
+                                fontFamily: 'var(--font-body)',
+                                animationDelay: `${index * 18}ms`
                             }}
                         >
                             {word.text}

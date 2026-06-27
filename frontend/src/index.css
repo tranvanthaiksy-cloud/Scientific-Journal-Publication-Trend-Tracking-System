@@ -4,7 +4,7 @@
    ============================================================ */
 
 /* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Inter:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 /* ============================================================
@@ -76,8 +76,8 @@
   --font-display:    'Source Serif 4', serif;
   --font-headline:   'Source Serif 4', serif;
   --font-paper:      'Source Serif 4', serif;
-  --font-body:       'Work Sans', sans-serif;
-  --font-ui:         'Work Sans', sans-serif;
+  --font-body:       'Inter', sans-serif;
+  --font-ui:         'Inter', sans-serif;
   --font-data:       'JetBrains Mono', monospace;
 
   /* Font sizes */
@@ -197,10 +197,10 @@ button {
 
 .af-sidebar__brand h1 {
   font-family: var(--font-display);
-  font-size: var(--fs-headline-m);
+  font-size: 32px;
   font-weight: 700;
   color: var(--color-primary);
-  line-height: 1;
+  line-height: 1.05;
   margin: 0;
 }
 
@@ -308,9 +308,9 @@ button {
 }
 
 .af-topbar__title {
-  font-family: var(--font-paper);
-  font-size: var(--fs-paper);
-  font-weight: 600;
+  font-family: var(--font-headline);
+  font-size: 28px;
+  font-weight: 700;
   color: var(--color-primary);
 }
 
@@ -1529,4 +1529,37 @@ button {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ============================================================
+   TYPOGRAPHY OVERRIDES — Scholarly Precision Design System
+   ============================================================ */
+
+/* 1. Academic Serif Font (Source Serif 4) for Headings, Cards & Charts */
+h1, h2, h3, h4, h5, h6,
+.ant-typography,
+.ant-card-head-title,
+.ant-card-title,
+.ant-statistic-title,
+.af-topbar__title,
+.af-related-card-title {
+  font-family: var(--font-headline) !important;
+}
+
+/* 2. Modern Sans-Serif Font (Inter) for UI & Data Numbers */
+body,
+button,
+input,
+select,
+textarea,
+.ant-btn,
+.ant-input,
+.ant-list-item,
+.ant-table,
+.ant-statistic-content-value,
+.ant-statistic-content-suffix,
+.ant-statistic-content-prefix,
+.af-nav-item,
+.af-related-desc {
+  font-family: var(--font-body) !important;
 }

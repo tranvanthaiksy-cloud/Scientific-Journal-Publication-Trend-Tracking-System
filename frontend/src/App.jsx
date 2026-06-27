@@ -11,6 +11,7 @@ import TopicExplorer from "./pages/TopicExplorer";
 import Following from "./pages/Following";
 import Reports from "./pages/Reports";
 import Bookmarks from "./pages/Bookmarks";
+import AdminPanel from "./pages/AdminPanel";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout/Layout";
@@ -104,6 +105,14 @@ function App() {
                     element={
                         <Protected>
                             <Bookmarks />
+                        </Protected>
+                    }
+                />
+                <Route
+                    path="/admin"
+                    element={
+                        <Protected role="ADMIN">
+                            <AdminPanel />
                         </Protected>
                     }
                 />
