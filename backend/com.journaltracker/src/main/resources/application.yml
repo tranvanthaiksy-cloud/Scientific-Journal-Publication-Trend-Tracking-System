@@ -50,4 +50,7 @@ sync:
   default-query: ${SYNC_DEFAULT_QUERY:machine learning}
   max-pages-per-sync: ${SYNC_MAX_PAGES:10}
 
+cors:
+  allowed-origins: "*"
+
 

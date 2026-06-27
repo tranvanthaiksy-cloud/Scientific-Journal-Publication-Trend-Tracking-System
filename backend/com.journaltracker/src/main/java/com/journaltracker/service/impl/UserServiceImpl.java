@@ -65,7 +65,6 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
     @Override
     @Transactional(readOnly = true)
     public UserPageResponse getAdminUsers(int page, int size, String search, String role) {
@@ -128,7 +127,8 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("User không tồn tại với ID: " + id));
 
-        user.setRole(com.journaltracker.entity.Role.valueOf(role.toUpperCase()));        userRepository.save(user);
+        user.setRole(com.journaltracker.entity.Role.valueOf(role.toUpperCase()));
+        userRepository.save(user);
     }
 
     // =========================================================================
