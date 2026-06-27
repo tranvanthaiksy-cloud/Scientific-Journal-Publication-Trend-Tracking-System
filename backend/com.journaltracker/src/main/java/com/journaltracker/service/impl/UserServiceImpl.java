@@ -1,5 +1,6 @@
 package com.journaltracker.service.impl;
 
+import com.journaltracker.entity.Role;
 import com.journaltracker.dto.request.ChangePasswordRequest;
 import com.journaltracker.dto.request.UpdateProfileRequest;
 import com.journaltracker.dto.response.UserPageResponse;
@@ -63,19 +64,25 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    // =========================================================================
-    // 🔥 TRIỂN KHAI CHI TIẾT 4 HÀM MỚI CHO ADMIN QUẢN LÝ USERS (JP-13)
-    // =========================================================================
+
 
     @Override
     @Transactional(readOnly = true)
     public UserPageResponse getAdminUsers(int page, int size, String search, String role) {
         Pageable pageable = PageRequest.of(page, size);
 
-        // Gọi custom query từ UserRepository
-        Page<User> userPage = userRepository.searchAndFilterUsers(search, role, pageable);
+        Role roleEnum = null;
+        if (role != null && !role.trim().isEmpty()) {
+            try {
+                roleEnum = Role.valueOf(role.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                // Nếu trên Postman cố tình gõ role bậy bạ (ví dụ: role=ABC) thì chặn luôn
+                throw new BadRequestException("Role không hợp lệ: " + role);
+            }
+        }
 
-        // Map List<User> thành List<UserResponse> dùng hàm toResponse() có sẵn của ông
+        Page<User> userPage = userRepository.searchAndFilterUsers(search, roleEnum, pageable);
+
         List<UserResponse> userResponses = userPage.getContent().stream()
                 .map(this::toResponse)
                 .toList();

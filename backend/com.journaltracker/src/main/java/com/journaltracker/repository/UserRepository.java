@@ -1,5 +1,7 @@
 package com.journaltracker.repository;
 
+import com.journaltracker.entity.Role;
+
 import com.journaltracker.entity.User;
 
 import java.util.Optional;
@@ -30,6 +32,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "(:search IS NULL OR u.username LIKE %:search% OR u.email LIKE %:search%) " +
             "AND (:role IS NULL OR u.role = :role)")
     Page<User> searchAndFilterUsers(@Param("search") String search,
-                                    @Param("role") String role,
+                                    @Param("role") Role role,
                                     Pageable pageable);
 }
